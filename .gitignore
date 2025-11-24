@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+bower_components/
+
+# Build output
+dist/
+build/
+out/
+*.log
+
+# Local env files
+.env
+.env.local
+.env.*.local
+
+# Editor folders
+.vscode/
+.idea/
+*.swp
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Temp
+tmp/
+temp/
+*.tmp
+
+# NPM cache
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Parcel cache
+.cache/
+
+# TypeScript
+*.tsbuildinfo
+
+# Optional: lock files (если используешь только один менеджер пакетов)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
