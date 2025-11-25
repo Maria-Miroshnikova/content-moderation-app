@@ -1,5 +1,5 @@
 import React from "react";
-import { SORT_COST, SORT_DATE, SORT_DEFAULT, SORT_NAMES, SORT_STATUS } from "../App";
+import { SORT_COST, SORT_DATE, SORT_DEFAULT, SORT_NAMES, SORT_PRIORITY } from "../App";
 
 const CardsSortForm = ({ sortSettings, setSortSettings }) => {
     return (
@@ -13,7 +13,7 @@ const CardsSortForm = ({ sortSettings, setSortSettings }) => {
                     <option value={SORT_DEFAULT}>Сортировать по...</option>
                     <option value={SORT_DATE}>{SORT_NAMES[0]}</option>
                     <option value={SORT_COST}>{SORT_NAMES[1]}</option>
-                    <option value={SORT_STATUS}>{SORT_NAMES[2]}</option>
+                    <option value={SORT_PRIORITY}>{SORT_NAMES[2]}</option>
                 </select>
 
                 {[SORT_DATE, SORT_COST].includes(sortSettings.type) && (

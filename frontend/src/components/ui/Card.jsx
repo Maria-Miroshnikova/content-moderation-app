@@ -1,6 +1,7 @@
 import React from "react";
 import cl from "./Card.module.css"
 import { PRIORITY_HIGH, STATUS_ACCEPTED, STATUS_INPRROCESS, CATEGORY_NAMES } from "../../App";
+import img_placeholder from "../../img/img_placeholder.png"
 
 const Card = ({props}) => {
 
@@ -26,13 +27,14 @@ const Card = ({props}) => {
     
     return(
         <div className={cl.card}>
-            <img src={null}/>
+            <img src={img_placeholder}/>
             <div className={cl.description}>
                 <p>{props.title}</p>
                 <p>{props.cost}</p>
                 <p>{getCategory()}</p>
             </div>
             <div className={cl.description}>
+                <p>{props.date}</p>
                 <p>{getStatus()}</p>
                 <p>{getPriority()}</p>
             </div>

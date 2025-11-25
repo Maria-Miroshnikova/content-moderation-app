@@ -27,11 +27,11 @@ export const CATEGORY_NAMES = [
 export const SORT_DEFAULT = -1;
 export const SORT_DATE = 0;
 export const SORT_COST = 1;
-export const SORT_STATUS = 2;
+export const SORT_PRIORITY = 2;
 export const SORT_NAMES = [
   "По дате",
   "По цене",
-  "По статусу"
+  "По приоритету"
 ]
 
 export const FILTER_DEFAULT = {
@@ -47,11 +47,11 @@ export const FILTER_DEFAULT = {
 function App() {
 
   const [cards, setCards] = useState([
-    { "id": 1, "title": "Give away", "cost": 100, "category": CATEGORY_GIFT, "date": "", "status": STATUS_INPRROCESS, "priority": PRIORITY_HIGH },
-    { "id": 2, "title": "Hello", "cost": 10, "category": CATEGORY_HOBBY, "date": "", "status": STATUS_INPRROCESS, "priority": PRIORITY_USUAL },
-    { "id": 3, "title": "World", "cost": 100, "category": CATEGORY_AUTO, "date": "", "status": STATUS_ACCEPTED, "priority": PRIORITY_USUAL },
-    { "id": 4, "title": "How about to call saul", "cost": 1000, "category": CATEGORY_AUTO, "date": "", "status": STATUS_DECLINED, "priority": PRIORITY_HIGH },
-    { "id": 5, "title": "Very long long long long long long title", "cost": 200, "category": CATEGORY_HOBBY, "date": "", "status": STATUS_DECLINED, "priority": PRIORITY_USUAL }
+    { "id": 1, "title": "Give away", "cost": 100, "category": CATEGORY_GIFT, "date": 0, "status": STATUS_INPRROCESS, "priority": PRIORITY_HIGH },
+    { "id": 2, "title": "Hello", "cost": 10, "category": CATEGORY_HOBBY, "date": 1, "status": STATUS_INPRROCESS, "priority": PRIORITY_USUAL },
+    { "id": 3, "title": "World", "cost": 100, "category": CATEGORY_AUTO, "date": 2, "status": STATUS_ACCEPTED, "priority": PRIORITY_USUAL },
+    { "id": 4, "title": "How about to call saul", "cost": 1000, "category": CATEGORY_AUTO, "date": 0, "status": STATUS_DECLINED, "priority": PRIORITY_HIGH },
+    { "id": 5, "title": "Very long long long long long long title", "cost": 200, "category": CATEGORY_HOBBY, "date": 4, "status": STATUS_DECLINED, "priority": PRIORITY_USUAL }
   ])
 
   const [filter, setFilter] = useState(FILTER_DEFAULT)
@@ -61,9 +61,29 @@ function App() {
     "sort_up": 1
   })
 
+  const sortedCards = useMemo(() => {
+    if (sort.type === SORT_COST) {
+      if (sort.sort_up)
+        return [...cards].sort((a, b) => a.cost - b.cost)
+      else
+        return [...cards].sort((a, b) => -a.cost + b.cost)
+    }
+    else if (sort.type === SORT_DATE) {
+      if (sort.sort_up)
+        return [...cards].sort((a, b) => a.date - b.date)
+      else
+        return [...cards].sort((a, b) => -a.date + b.date)
+    }
+    else if (sort.type === SORT_PRIORITY) {
+      return [...cards].sort((a, b) => -a.priority + b.priority)
+    }
+
+    return cards;
+  }, [sort, cards])
+
   const filteredCards = useMemo(() => {
-    let filterSearch = cards.filter(card => card.title.toLowerCase().includes(filter.search));
-    
+    let filterSearch = sortedCards.filter(card => card.title.toLowerCase().includes(filter.search));
+
     let filterStatus = filterSearch;
     if (!filter.status_accepted)
       filterStatus = filterStatus.filter(card => card.status != STATUS_ACCEPTED);
@@ -84,15 +104,15 @@ function App() {
     }
 
     return filterCategory;
-  }, [filter, cards])
+  }, [filter, sortedCards])
 
   return (
     <div className="App">
 
       <div className="card_list">
         <div className='panel'>
-          <CardsFilterForm filter={filter} setFilter={setFilter}/>
-          <CardsSortForm sortSettings={sort} setSortSettings={setSort}/>
+          <CardsFilterForm filter={filter} setFilter={setFilter} />
+          <CardsSortForm sortSettings={sort} setSortSettings={setSort} />
         </div>
         {filteredCards.map(card => <Card props={card} key={card.id}></Card>)}
       </div>
