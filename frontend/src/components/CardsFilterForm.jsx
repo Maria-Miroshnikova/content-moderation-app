@@ -2,7 +2,7 @@ import React from "react";
 
 import { CATEGORY_AUTO, CATEGORY_DEFAULT, CATEGORY_GIFT, CATEGORY_HOBBY, CATEGORY_NAMES, CATEGORY_PETS, FILTER_DEFAULT } from "../App";
 
-const CardsFilterForm = ({ filter, setFilter }) => {
+const CardsFilterForm = ({ filter, setFilter, categories }) => {
 
     const resetFilter = (e) => {
         e.preventDefault()
@@ -45,10 +45,7 @@ const CardsFilterForm = ({ filter, setFilter }) => {
                 onChange={e => setFilter({ ...filter, category: Number(e.target.value) })}
             >
                 <option value={CATEGORY_DEFAULT}>Категория</option>
-                <option value={CATEGORY_GIFT}>{CATEGORY_NAMES[0]}</option>
-                <option value={CATEGORY_AUTO}>{CATEGORY_NAMES[1]}</option>
-                <option value={CATEGORY_PETS}>{CATEGORY_NAMES[2]}</option>
-                <option value={CATEGORY_HOBBY}>{CATEGORY_NAMES[3]}</option>
+                {Object.entries(categories).map(([id, name]) => (<option key={id} value={id}>{name}</option>))}
             </select>
 
             <p>Диапазон цен:</p>
@@ -56,13 +53,11 @@ const CardsFilterForm = ({ filter, setFilter }) => {
                 <input type='number'
                     placeholder='oт'
                     value={filter.cost_min}
-                    defaultValue={0}
                     onChange={e => setFilter({ ...filter, cost_min: Number(e.target.value) })}
                 />
                 <input type='number'
                     placeholder='до'
                     value={filter.cost_max}
-                    defaultValue={10000}
                     onChange={e => setFilter({ ...filter, cost_max: Number(e.target.value) })}
                 />
             </div>

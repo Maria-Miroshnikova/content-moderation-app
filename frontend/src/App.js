@@ -1,13 +1,16 @@
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import './App.css';
 import Card from './components/ui/Card';
 import CardsFilterForm from './components/CardsFilterForm';
 import CardsSortForm from './components/CardsSortForm';
+import Service from './API/Service';
+import { useFetching } from './hooks/useFetching';
 
 export const STATUS_INPRROCESS = 0;
 export const STATUS_ACCEPTED = 1;
 export const STATUS_DECLINED = 2;
+export const STATUS_DRAFT = 3;
 
 export const PRIORITY_HIGH = 1;
 export const PRIORITY_USUAL = 0;
@@ -37,30 +40,72 @@ export const SORT_NAMES = [
 export const FILTER_DEFAULT = {
   "search": "",
   "cost_min": 0,
-  "cost_max": 10000,
+  "cost_max": 10000000, // какой максимум? из-за этого могут быть поломки
   "category": -1,
   "status_inprocess": true,
   "status_accepted": true,
   "status_declined": true,
+  "status_draft": true,
 }
+
+// а как сделать оптимальный массив?
+//export const CATEGORIES = {}
+
+export const STATUSES = [
+  "pending", "approved", "rejected", "draft"
+]
 
 function App() {
 
-  const [cards, setCards] = useState([
+  const [cards, setCards] = useState([])/*[
     { "id": 1, "title": "Give away", "cost": 100, "category": CATEGORY_GIFT, "date": 0, "status": STATUS_INPRROCESS, "priority": PRIORITY_HIGH },
     { "id": 2, "title": "Hello", "cost": 10, "category": CATEGORY_HOBBY, "date": 1, "status": STATUS_INPRROCESS, "priority": PRIORITY_USUAL },
     { "id": 3, "title": "World", "cost": 100, "category": CATEGORY_AUTO, "date": 2, "status": STATUS_ACCEPTED, "priority": PRIORITY_USUAL },
     { "id": 4, "title": "How about to call saul", "cost": 1000, "category": CATEGORY_AUTO, "date": 0, "status": STATUS_DECLINED, "priority": PRIORITY_HIGH },
     { "id": 5, "title": "Very long long long long long long title", "cost": 200, "category": CATEGORY_HOBBY, "date": 4, "status": STATUS_DECLINED, "priority": PRIORITY_USUAL }
-  ])
+  ])*/
+
+  const [totalItems, setTotalItems] = useState()
+  const [totalPages, setTotalPages] = useState()
+  const [page, setPage] = useState()
+  const [limit, setLimit] = useState()
 
   const [filter, setFilter] = useState(FILTER_DEFAULT)
+
+  const [categoriesDict, setCategoriesDict] = useState({})
 
   const [sort, setSort] = useState({
     "type": SORT_DEFAULT,
     "sort_up": 1
   })
 
+  const [fetchCards, isCardsLoading, error] = useFetching(async (limit, page, filter, sort) => {
+    const response = await Service.getAll(limit, page, filter, sort)
+    const form = Service.getFormattedCards(response.data)
+    setCards(form)
+    console.log(form)
+    setTotalItems(response.data.pagination.totalItems)
+    setTotalPages(response.data.pagination.totalPages)
+  })
+
+  const [fetchCategories, isCatigoriesLoading, errorCategories] = useFetching(async (limit, page) => {
+    const categories = await Service.getCategories(page, limit)
+    setCategoriesDict(categories)
+  })
+
+  useEffect(() => {
+    fetchCards(limit, page, filter, sort) //(limit, page)
+  }, [filter, sort, page, limit])
+
+  useEffect(() => {
+    if (totalItems === undefined)
+    {
+
+    }
+    else
+        fetchCategories(totalItems, 1)
+  }, [totalItems])
+  /*
   const sortedCards = useMemo(() => {
     if (sort.type === SORT_COST) {
       if (sort.sort_up)
@@ -78,11 +123,14 @@ function App() {
       return [...cards].sort((a, b) => -a.priority + b.priority)
     }
 
-    return cards;
+    //console.log(sort.type)
+    //console.log([...cards])
+    return [...cards];
   }, [sort, cards])
 
   const filteredCards = useMemo(() => {
     let filterSearch = sortedCards.filter(card => card.title.toLowerCase().includes(filter.search));
+    //console.log("after search filter ", filterSearch)
 
     let filterStatus = filterSearch;
     if (!filter.status_accepted)
@@ -92,9 +140,13 @@ function App() {
     if (!filter.status_inprocess)
       filterStatus = filterStatus.filter(card => card.status != STATUS_INPRROCESS);
 
+    //console.log("after status filter ", filterStatus)
+
     let filterCost = filterStatus;
     filterCost = filterCost.filter(card => card.cost >= filter.cost_min)
     filterCost = filterCost.filter(card => card.cost <= filter.cost_max)
+
+    //console.log("after cost filter ", filterCost)
 
     let filterCategory = filterCost;
     if (filter.category != CATEGORY_DEFAULT) {
@@ -103,18 +155,21 @@ function App() {
       filterCategory = filterCategory.filter(card => card.category === filter.category)
     }
 
+    //console.log("after category filter ", filterCategory)
     return filterCategory;
-  }, [filter, sortedCards])
+  }, [filter, sortedCards])*/
 
   return (
     <div className="App">
 
       <div className="card_list">
         <div className='panel'>
-          <CardsFilterForm filter={filter} setFilter={setFilter} />
+          <CardsFilterForm filter={filter} setFilter={setFilter} categories={categoriesDict}/>
           <CardsSortForm sortSettings={sort} setSortSettings={setSort} />
         </div>
-        {filteredCards.map(card => <Card props={card} key={card.id}></Card>)}
+        {isCardsLoading && <p>LOADING . . .</p>}
+        {error && <p>{error}</p>}
+        {!isCardsLoading && !error && cards.map(card => <Card props={card} key={card.id}></Card>)}
       </div>
     </div>
   );
