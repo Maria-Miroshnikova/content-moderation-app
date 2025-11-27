@@ -103,4 +103,39 @@ export default class Service {
         return response
     }
 
+    static async getAdsById(id) {
+        const response = await axios.get(`http://localhost:3001/api/v1/ads/${id}`, {
+            params: {
+                id: id
+            }
+        });
+
+        response.data.moderationHistory = response.data.moderationHistory.map((h) => {
+            if (h.action === "approved")
+                return {...h, status: STATUS_ACCEPTED}
+            else if (h.action === "pending")
+                return {...h, status: STATUS_INPRROCESS}
+            else if (h.action === "draft")
+                return {...h, status: STATUS_DRAFT}
+            else
+                return {...h, status: STATUS_DECLINED}
+        })
+        
+        return response
+        // characteristics - таблица
+        // description
+        // images
+        // moderation history
+        // seller
+        // update at - ?
+
+        // moderation history - массив элементов следующего вида:
+        // action: "appoved"
+        // comment: ""
+        // id: 1
+        // moderatorId: 1
+        // moderatorName: "Name"
+        // reason: null
+        // timestamp: "..."
+    }
 }

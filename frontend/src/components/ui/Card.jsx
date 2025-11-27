@@ -30,7 +30,7 @@ const Card = ({props}) => {
     //console.log(props)
     return(
         <div className={cl.card}>
-            <img src={img_placeholder}/>
+            <img src={props.img}/>
             <div className={cl.description}>
                 <p>{props.title}</p>
                 <p>{props.cost}</p>
