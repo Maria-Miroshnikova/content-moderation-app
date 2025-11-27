@@ -12,7 +12,7 @@
     flex-grow: 1;
 }
 
-button {
+.panel_btn {
     align-self: end;
 
     background-color: teal;

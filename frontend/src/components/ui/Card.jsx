@@ -41,7 +41,7 @@ const Card = ({props}) => {
                 <p>{getStatus()}</p>
                 <p>{getPriority()}</p>
             </div>
-            <button>Открыть</button>
+            <button className={cl.panel_btn}>Открыть</button>
         </div>
     )
 }

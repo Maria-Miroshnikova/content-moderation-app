@@ -1,6 +1,7 @@
 import React from "react";
 
 import { CATEGORY_AUTO, CATEGORY_DEFAULT, CATEGORY_GIFT, CATEGORY_HOBBY, CATEGORY_NAMES, CATEGORY_PETS, FILTER_DEFAULT } from "../App";
+import cl from "./ui/Card.module.css"
 
 const CardsFilterForm = ({ filter, setFilter, categories }) => {
 
@@ -68,7 +69,7 @@ const CardsFilterForm = ({ filter, setFilter, categories }) => {
                 type='text'
             />
 
-            <button onClick={e => resetFilter(e)}>Сбросить фильтр</button>
+            <button className={cl.panel_btn} onClick={e => resetFilter(e)}>Сбросить фильтр</button>
         </div>
     )
 }

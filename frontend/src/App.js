@@ -6,6 +6,8 @@ import CardsFilterForm from './components/CardsFilterForm';
 import CardsSortForm from './components/CardsSortForm';
 import Service from './API/Service';
 import { useFetching } from './hooks/useFetching';
+import PaginationBar from './components/ui/PaginationBar';
+import CardList from './components/CardList';
 
 export const STATUS_INPRROCESS = 0;
 export const STATUS_ACCEPTED = 1;
@@ -67,8 +69,8 @@ function App() {
 
   const [totalItems, setTotalItems] = useState()
   const [totalPages, setTotalPages] = useState()
-  const [page, setPage] = useState()
-  const [limit, setLimit] = useState()
+  const [page, setPage] = useState(1)
+  const [limit, setLimit] = useState(10)
 
   const [filter, setFilter] = useState(FILTER_DEFAULT)
 
@@ -76,16 +78,17 @@ function App() {
 
   const [sort, setSort] = useState({
     "type": SORT_DEFAULT,
-    "sort_up": 1
+    "sort_up": true
   })
 
   const [fetchCards, isCardsLoading, error] = useFetching(async (limit, page, filter, sort) => {
     const response = await Service.getAll(limit, page, filter, sort)
     const form = Service.getFormattedCards(response.data)
     setCards(form)
-    console.log(form)
+    //console.log(form)
     setTotalItems(response.data.pagination.totalItems)
     setTotalPages(response.data.pagination.totalPages)
+    //console.log("total pages: ", response.data.pagination.totalPages)
   })
 
   const [fetchCategories, isCatigoriesLoading, errorCategories] = useFetching(async (limit, page) => {
@@ -94,11 +97,16 @@ function App() {
   })
 
   useEffect(() => {
+    setPage(1);  
+}, [filter, sort]);
+
+  useEffect(() => {
     fetchCards(limit, page, filter, sort) //(limit, page)
+    //console.log("sort changed: ", sort)
   }, [filter, sort, page, limit])
 
   useEffect(() => {
-    if (totalItems === undefined)
+    if ((totalItems === undefined) || (filter !== FILTER_DEFAULT))
     {
 
     }
@@ -162,14 +170,17 @@ function App() {
   return (
     <div className="App">
 
-      <div className="card_list">
+      <div className="card_list_layout">
         <div className='panel'>
           <CardsFilterForm filter={filter} setFilter={setFilter} categories={categoriesDict}/>
           <CardsSortForm sortSettings={sort} setSortSettings={setSort} />
         </div>
+        
         {isCardsLoading && <p>LOADING . . .</p>}
         {error && <p>{error}</p>}
-        {!isCardsLoading && !error && cards.map(card => <Card props={card} key={card.id}></Card>)}
+        {!isCardsLoading && !error && <CardList cards={cards}/>}
+        
+        <PaginationBar totalPages={totalPages} totalItems={totalItems} page={page} setPage={setPage}/>
       </div>
     </div>
   );

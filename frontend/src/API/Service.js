@@ -1,5 +1,5 @@
 import axios from "axios"
-import { CATEGORIES, CATEGORY_DEFAULT, PRIORITY_HIGH, PRIORITY_USUAL, STATUS_ACCEPTED, STATUS_DECLINED, STATUS_DRAFT, STATUS_INPRROCESS, STATUSES } from "../App";
+import { CATEGORIES, CATEGORY_DEFAULT, PRIORITY_HIGH, PRIORITY_USUAL, SORT_COST, SORT_DATE, SORT_PRIORITY, STATUS_ACCEPTED, STATUS_DECLINED, STATUS_DRAFT, STATUS_INPRROCESS, STATUSES } from "../App";
 
 export default class Service {
 
@@ -38,15 +38,10 @@ export default class Service {
         return categories
     }
 
-    static async getAll(limit = 10, page = 1, filter, sort) {
-        const params = {
-            limit: limit,
-            page: page,
-            minPrice: filter.cost_min,
-            maxPrice: filter.cost_max,
-        }
-        //console.log("min: ", filter.cost_min, " max: ", filter.cost_max)
+    static sort_enum = ['createdAt', 'price', 'priority'];
+    static sort_dir = ['asc', 'desc'];
 
+    static setFilterParams(params, filter) {
         if (filter.category != CATEGORY_DEFAULT)
             params.categoryId = filter.category
 
@@ -64,12 +59,46 @@ export default class Service {
         statuses.push(STATUSES[STATUS_DRAFT])
 
         params.status = statuses
-        console.log("status: ", statuses)
+        //console.log("status: ", statuses)
+    }
+
+    static setSortParams(params, sort) {
+        if (sort.type === SORT_COST) {
+            params.sortBy = this.sort_enum[1]
+            if (sort.sort_up === true)
+                params.sortOrder = this.sort_dir[0]
+            else
+                params.sortOrder = this.sort_dir[1]
+        }
+        else if (sort.type === SORT_DATE) {
+            params.sortBy = this.sort_enum[0]
+            if (sort.sort_up === true)
+                params.sortOrder = this.sort_dir[0]
+            else
+                params.sortOrder = this.sort_dir[1]
+        }
+        else if (sort.type === SORT_PRIORITY)
+            params.sortBy = this.sort_enum[2]
+        //console.log("params after setSort: ", params)
+    }
+
+    static async getAll(limit = 10, page = 1, filter, sort) {
+        const params = {
+            limit: limit,
+            page: page,
+            minPrice: filter.cost_min,
+            maxPrice: filter.cost_max,
+        }
+        //console.log("min: ", filter.cost_min, " max: ", filter.cost_max)
+
+        this.setFilterParams(params, filter)
+        this.setSortParams(params, sort)
+        //console.log("params after settings: ", params)
 
         const response = await axios.get('http://localhost:3001/api/v1/ads', {
             params: params
         });
-        console.log(response.data)
+        //console.log(response.data)
         //return response.data.map((p) => ({id: p.id, title: p.title, content: p.body}))
         return response
     }
