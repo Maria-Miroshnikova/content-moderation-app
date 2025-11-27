@@ -1,7 +1,7 @@
 import React from "react";
 import cl from "./Card.module.css"
-import { PRIORITY_HIGH, STATUS_ACCEPTED, STATUS_INPRROCESS, CATEGORY_NAMES, STATUS_DECLINED } from "../../App";
 import img_placeholder from "../../img/img_placeholder.png"
+import { CATEGORY_NAMES, PRIORITY_HIGH, STATUS_ACCEPTED, STATUS_DECLINED, STATUS_INPRROCESS } from "../../pages/AdsPage";
 
 const Card = ({props}) => {
 

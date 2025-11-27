@@ -1,5 +1,5 @@
 import React from "react";
-import { SORT_COST, SORT_DATE, SORT_DEFAULT, SORT_NAMES, SORT_PRIORITY } from "../App";
+import { SORT_COST, SORT_DATE, SORT_DEFAULT, SORT_NAMES, SORT_PRIORITY } from "../pages/AdsPage";
 
 const CardsSortForm = ({ sortSettings, setSortSettings }) => {
     return (

@@ -1,7 +1,7 @@
 import React from "react";
 
-import { CATEGORY_AUTO, CATEGORY_DEFAULT, CATEGORY_GIFT, CATEGORY_HOBBY, CATEGORY_NAMES, CATEGORY_PETS, FILTER_DEFAULT } from "../App";
 import cl from "./ui/Card.module.css"
+import { CATEGORY_DEFAULT, FILTER_DEFAULT } from "../pages/AdsPage";
 
 const CardsFilterForm = ({ filter, setFilter, categories }) => {
 
