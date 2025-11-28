@@ -185,4 +185,16 @@ export default class Service {
 
         return response
     }
+
+    // все переменные - строками, первая - из массива PERIOD, даты - даты в виде строки
+    static async getStats(period, startDate, endDate) {
+        const response = await axios.get(`http://localhost:3001/api/v1//stats/summary`, {
+            params: {
+                priod: period
+            }
+        });
+        //console.log("DRAFT request")
+
+        return response
+    }
 }
