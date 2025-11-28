@@ -1,0 +1,61 @@
+.stats_page_layout {
+    width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 40px;
+
+    border: 1px solid black;
+    border-radius: 10px;
+
+    padding: 20px;
+}
+
+.period_panel{
+    display: flex;
+    gap: 0px;
+
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.period_btns_container {
+    display: flex;
+    gap: 20px;
+
+    padding: 10px;
+
+}
+
+.stats_layout {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.stats_container{
+    display: flex;
+    justify-content: space-evenly;
+    gap: 20px;
+}
+
+.stats_panel {
+    border: 1px solid black;
+    border-radius: 10px;
+    flex-grow: 1;
+
+    padding: 10px;
+
+    min-height: 10vh;
+}
+
+.graphic_container{
+    border: 1px solid black;
+    border-radius: 15px;
+
+    padding: 10px;
+    min-height: 25vh;
+}

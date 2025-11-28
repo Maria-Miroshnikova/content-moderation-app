@@ -6,6 +6,7 @@ import AdsPage, { FILTER_DEFAULT, SORT_DEFAULT } from './pages/AdsPage';
 import AdsDetailPage from './pages/AdsDetailPage';
 import { FilterAndSortContext } from './context';
 import { useState } from 'react';
+import StatisticsPage from './pages/StatiscticsPage';
 
 
 function App() {
@@ -13,7 +14,8 @@ function App() {
   const routes = [
     { path: '/list', element: AdsPage, exact: true },
     //{path: '/posts', element: Posts, exact: true},
-    { path: '/item/:id', element: AdsDetailPage, exact: true }
+    { path: '/item/:id', element: AdsDetailPage, exact: true },
+    { path: '/stats', element: StatisticsPage, exact: true }
   ]
 
   const [sort, setSort] = useState({
