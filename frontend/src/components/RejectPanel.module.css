@@ -1,0 +1,20 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.inner_panel {
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.inner_panel textarea {
+    resize: none;
+    box-sizing: border-box;
+    width: 100%;
+}

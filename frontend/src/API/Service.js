@@ -99,7 +99,7 @@ export default class Service {
 
         this.setFilterParams(params, filter)
         this.setSortParams(params, sort)
-        console.log("params after settings: ", params)
+        //console.log("params after settings: ", params)
 
         const response = await axios.get('http://localhost:3001/api/v1/ads', {
             params: params
@@ -116,18 +116,22 @@ export default class Service {
             }
         });
 
-        response.data.moderationHistory = response.data.moderationHistory.map((h) => {
-            if (h.action === "approved")
-                return {...h, status: STATUS_ACCEPTED}
-            else if (h.action === "pending")
-                return {...h, status: STATUS_INPRROCESS}
-            else if (h.action === "draft")
-                return {...h, status: STATUS_DRAFT}
-            else
-                return {...h, status: STATUS_DECLINED}
-        })
+        //console.log("moder history BEFORE format: ", response.data.moderationHistory)
 
-        return response
+        let moderationHistory = response.data.moderationHistory.map((h) => {
+            if (h.action === "approved")
+                return { ...h, status: STATUS_ACCEPTED }
+            else if (h.action === "pending")
+                return { ...h, status: STATUS_INPRROCESS }
+            else if ((h.action === "draft") || (h.action === "requestChanges"))
+                return { ...h, status: STATUS_DRAFT }
+            else
+                return { ...h, status: STATUS_DECLINED }
+        })
+        //console.log("formatted moder history: ", moderationHistory)
+        let formatted = { ...response.data, moderationHistory: moderationHistory }
+        //console.log("formatted resp: ", formatted)
+        return formatted
         // characteristics - таблица
         // description
         // images
@@ -143,5 +147,42 @@ export default class Service {
         // moderatorName: "Name"
         // reason: null
         // timestamp: "..."
+    }
+
+    // а обработка ошибки?
+    static async postApproveById(id) {
+        const response = await axios.post(`http://localhost:3001/api/v1/ads/${id}/approve`, {
+            params: {
+                id: id
+            }
+        });
+
+        return response
+    }
+
+    static async postRejectedById(id, comment, reason) {
+        const response = await axios.post(`http://localhost:3001/api/v1/ads/${id}/reject`, {
+            params: {
+                id: id
+            },
+            reason: reason,
+            comment: comment
+        });
+        //console.log("REJECT request")
+
+        return response
+    }
+
+    static async postDraftById(id, comment, reason) {
+        const response = await axios.post(`http://localhost:3001/api/v1/ads/${id}/request-changes`, {
+            params: {
+                id: id
+            },
+            reason: reason,
+            comment: comment
+        });
+        //console.log("DRAFT request")
+
+        return response
     }
 }

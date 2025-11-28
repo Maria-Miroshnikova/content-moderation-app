@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { STATUS_ACCEPTED, STATUS_DECLINED, STATUS_INPRROCESS } from "../pages/AdsPage";
+import { STATUS_ACCEPTED, STATUS_DECLINED, STATUS_DRAFT, STATUS_INPRROCESS } from "../pages/AdsPage";
 import cl from "./ModerationHistoryPanel.module.css"
 
 const ModerationHistoryPanel = ({ history }) => {
 
     const getDecision = (status) => {
+        //console.log("status: ", status)
         if (status === STATUS_ACCEPTED) {
             return "Одобрено"
         }
@@ -30,6 +31,7 @@ const ModerationHistoryPanel = ({ history }) => {
                         <p><b>Комментарий:</b> {h.comment}</p>
                         <p><b>{getDecision(h.status)}</b></p>
                         {h.status === STATUS_DECLINED && <p><b>Причина отклонения:</b> {h.reason}</p>}
+                        {h.status === STATUS_DRAFT && <p><b>Причина возвращения:</b> {h.reason}</p>}
                     </div>)
             })}
         </div>

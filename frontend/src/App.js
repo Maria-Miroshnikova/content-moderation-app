@@ -22,6 +22,11 @@ function App() {
   })
 
   const [filter, setFilter] = useState(FILTER_DEFAULT)
+  // idPage - хранит номер карточки в фильтрованном и сортированном списке, в форме от 1 до totalItems
+  // его посылают на сервер в качестве page чтобы получить данный элемент через getAll(limit = 1, page = idPage)
+  // за его корректное вычисление отвечает CardList, idPage = limit * (page - 1) + index + 1,
+  // где page - выбранная страница из пагинации, index - индекс в массиве карточек
+  // этим значением так же управляют кнопки (пред/след) на странице детального просмотра
   const [idPage, setIdPage] = useState()
   const [totalItems, setTotalItems] = useState()
 

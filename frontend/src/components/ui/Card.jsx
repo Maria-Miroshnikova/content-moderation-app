@@ -21,7 +21,7 @@ const Card = ({ props, id}) => {
         else if (props.status === STATUS_DECLINED)
             return "Отклонена";
         else
-            return "draft";
+            return "Возвращено";
     }
 
     const getPriority = () => {

@@ -8,6 +8,9 @@ import GalleryPanel from "../components/GalleryPanel";
 import DescriptionPanel from "../components/DescriptionPanel";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { FilterAndSortContext } from "../context";
+import { STATUS_ACCEPTED, STATUS_DECLINED, STATUS_DRAFT } from "./AdsPage";
+import ModalView from "../components/ui/ModalView";
+import RejectPanel from "../components/RejectPanel";
 
 const AdsDetailPage = () => {
 
@@ -21,16 +24,20 @@ const AdsDetailPage = () => {
 
     const [fetchHistory, isLoadingHistory, errorHistory] = useFetching(async (id) => {
         const response = await Service.getAdsById(id)
-        //console.log(response.data)
-        setAdsData(response.data)
+        //console.log("form resp after fetch: ", response)
+        setAdsData(response)
     })
+
+    // для отслеживания нажатия на кнопки
+    const [actionStatus, setAtionStatus] = useState(true)
+    const [actionType, setActionType] = useState(-1)
 
     // загрузка данных карточки
     useEffect(() => {
         fetchHistory(params.id)
         //console.log("total items from context: ", totalItems)
         //console.log("idPage after open: ", idPage)
-    }, [params.id])
+    }, [params.id, actionStatus])
 
     const [idLeft, setIdLeft] = useState(-1)
     const [idRight, setIdRight] = useState(-1)
@@ -40,7 +47,7 @@ const AdsDetailPage = () => {
         if (idPage < totalItems) {
             let i = idPage + 1;
             const response = await Service.getAll(1, i, filter, sort)
-            console.log("right el: ", response.data.pagination)
+            //console.log("right el: ", response.data.pagination)
             setIdRight(response.data.ads[0].id)
         }
         else
@@ -49,7 +56,7 @@ const AdsDetailPage = () => {
         if (idPage > 1) {
             let i = idPage - 1;
             const response = await Service.getAll(1, i, filter, sort)
-            console.log("left el: ", response.data.pagination.page)
+            //console.log("left el: ", response.data.pagination.page)
             setIdLeft(response.data.ads[0].id)
         }
         else
@@ -58,7 +65,7 @@ const AdsDetailPage = () => {
 
     // загрузка карточек по бокам для возможности листать влево-вправо
     useEffect(() => {
-    //    console.log("totalItems: ", totalItems)
+        //    console.log("totalItems: ", totalItems)
         console.log("id-page: ", idPage)
         fetchSideCards()
     }, [params.id])
@@ -77,8 +84,20 @@ const AdsDetailPage = () => {
         navigate(`/item/${idRight}`)
     }
 
+    const [postApprove, isLoadingApprove, errorApprove] = useFetching(async (id) => {
+        const response = await Service.postApproveById(id)
+        //console.log(response.data)
+        setAtionStatus(!actionStatus)
+    })
+
+    const [modalVisibility, setModalVisibility] = useState(false)
+
     return (
         <div className={cl.AdsDetailsPage_layout}>
+            <ModalView isVisible={modalVisibility} setIsVisible={setModalVisibility}>
+                <RejectPanel actionType={actionType} actionStatus={actionStatus} setAtionStatus={setAtionStatus} id={params.id} setVisibility={setModalVisibility}/>
+            </ModalView>
+
             <div className={cl.gallery_and_history_layout}>
                 <GalleryPanel images={adsData.images} className={cl.gallery} />
                 <ModerationHistoryPanel history={adsData.moderationHistory} className={cl.history} />
@@ -87,9 +106,22 @@ const AdsDetailPage = () => {
                 <DescriptionPanel data={adsData} />
             </div>
             <div className={cl.buttons_panel}>
-                <button>Одобрить</button>
-                <button>Отклонить</button>
-                <button>Доработка</button>
+                <button onClick={() => postApprove(params.id)}>
+                    Одобрить
+                </button>
+                <button onClick={() => {
+                    setActionType(STATUS_DECLINED);
+                    setModalVisibility(true)
+                }}
+                >
+                    Отклонить</button>
+                <button onClick={() => {
+                    setActionType(STATUS_DRAFT);
+                    setModalVisibility(true)
+                }}
+                >
+                    Доработка
+                </button>
             </div>
             <div className={cl.navigation_panel}>
                 <Link to="/list">К списку</Link>
