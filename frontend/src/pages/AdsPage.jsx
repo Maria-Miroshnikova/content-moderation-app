@@ -1,5 +1,5 @@
 
-import { useEffect, useMemo, useState } from 'react';
+import { useContext, useEffect, useMemo, useState } from 'react';
 import './AdsPage.css';
 import PaginationBar from '../components/ui/PaginationBar';
 import CardList from '../components/CardList';
@@ -7,6 +7,7 @@ import CardsSortForm from '../components/CardsSortForm';
 import CardsFilterForm from '../components/CardsFilterForm';
 import { useFetching } from '../hooks/useFetching';
 import Service from '../API/Service';
+import { FilterAndSortContext } from '../context';
 
 export const STATUS_INPRROCESS = 0;
 export const STATUS_ACCEPTED = 1;
@@ -66,19 +67,14 @@ const AdsPage = () => {
     { "id": 5, "title": "Very long long long long long long title", "cost": 200, "category": CATEGORY_HOBBY, "date": 4, "status": STATUS_DECLINED, "priority": PRIORITY_USUAL }
   ])*/
 
-    const [totalItems, setTotalItems] = useState()
+    //const [totalItems, setTotalItems] = useState()
     const [totalPages, setTotalPages] = useState()
     const [page, setPage] = useState(1)
     const [limit, setLimit] = useState(10)
 
-    const [filter, setFilter] = useState(FILTER_DEFAULT)
+    const {filter, setFilter, sort, setSort, totalItems, setTotalItems} = useContext(FilterAndSortContext)
 
     const [categoriesDict, setCategoriesDict] = useState({})
-
-    const [sort, setSort] = useState({
-        "type": SORT_DEFAULT,
-        "sort_up": true
-    })
 
     const [fetchCards, isCardsLoading, error] = useFetching(async (limit, page, filter, sort) => {
         const response = await Service.getAll(limit, page, filter, sort)
@@ -176,7 +172,7 @@ const AdsPage = () => {
 
                 {isCardsLoading && <p>LOADING . . .</p>}
                 {error && <p>{error}</p>}
-                {!isCardsLoading && !error && <CardList cards={cards} />}
+                {!isCardsLoading && !error && <CardList cards={cards} page={page} limit={limit}/>}
 
                 <PaginationBar totalPages={totalPages} totalItems={totalItems} page={page} setPage={setPage} />
             </div>

@@ -1,9 +1,17 @@
-import React from "react";
+import React, { useContext } from "react";
 import cl from "./Card.module.css"
 import img_placeholder from "../../img/img_placeholder.png"
 import { CATEGORY_NAMES, PRIORITY_HIGH, STATUS_ACCEPTED, STATUS_DECLINED, STATUS_INPRROCESS } from "../../pages/AdsPage";
+import { Link, useNavigate } from "react-router-dom";
+import { FilterAndSortContext } from "../../context";
 
-const Card = ({props}) => {
+const Card = ({ props, id}) => {
+
+    const { idPage, setIdPage } = useContext(FilterAndSortContext);
+
+    const navigate = useNavigate();
+    
+    //console.log("id: ", id)
 
     const getStatus = () => {
         if (props.status === STATUS_INPRROCESS)
@@ -26,11 +34,19 @@ const Card = ({props}) => {
     const getCategory = () => {
         return CATEGORY_NAMES[props.category];
     }
-    
+
+    const handleClick = (e) => {
+        e.preventDefault();
+        //console.log("id: ", id)
+        setIdPage(id);
+
+        navigate(`/item/${Number(props.id)}`);
+    }
+
     //console.log(props)
-    return(
+    return (
         <div className={cl.card}>
-            <img src={props.img}/>
+            <img src={props.img} />
             <div className={cl.description}>
                 <p>{props.title}</p>
                 <p>{props.cost}</p>
@@ -41,7 +57,7 @@ const Card = ({props}) => {
                 <p>{getStatus()}</p>
                 <p>{getPriority()}</p>
             </div>
-            <button className={cl.panel_btn}>Открыть</button>
+            <Link to={`/item/${Number(props.id)}`} onClick={(e) => handleClick(e)} className={cl.panel_btn}>Открыть</Link>
         </div>
     )
 }

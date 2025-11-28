@@ -18,14 +18,16 @@ const DescriptionPanel = ({ data }) => {
                 <p><b>Полное описание:</b> {data.description}</p>
                 <p><b>Характеристики</b></p>
                 <table>
-                    {Object.entries(data.characteristics).map((i) => {
-                        return (
-                            <tr>
-                                <td>{i[0]}</td>
-                                <td>{i[1]}</td>
-                            </tr>
-                        )
-                    })}
+                    <tbody>
+                        {Object.entries(data.characteristics).map((i, index) => {
+                            return (
+                                <tr key={index}>
+                                    <td>{i[0]}</td>
+                                    <td>{i[1]}</td>
+                                </tr>
+                            )
+                        })}
+                    </tbody>
                 </table>
                 <p><b>Продавец:</b> {data.seller.name} | {data.seller.rating}</p>
                 <p>{data.seller.totalAds} объявлений | На сайте: {getYearsRegistered(data.seller.registeredAt)} лет </p>

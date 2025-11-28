@@ -82,6 +82,12 @@ export default class Service {
         //console.log("params after setSort: ", params)
     }
 
+    static async getAllNoFilter(limit = 10, page = 1) {
+        const response = await axios.get('http://localhost:3001/api/v1/ads')
+        //console.log("ответ ", response)
+        return response;
+    }
+
     static async getAll(limit = 10, page = 1, filter, sort) {
         const params = {
             limit: limit,
@@ -93,7 +99,7 @@ export default class Service {
 
         this.setFilterParams(params, filter)
         this.setSortParams(params, sort)
-        //console.log("params after settings: ", params)
+        console.log("params after settings: ", params)
 
         const response = await axios.get('http://localhost:3001/api/v1/ads', {
             params: params
@@ -120,7 +126,7 @@ export default class Service {
             else
                 return {...h, status: STATUS_DECLINED}
         })
-        
+
         return response
         // characteristics - таблица
         // description
