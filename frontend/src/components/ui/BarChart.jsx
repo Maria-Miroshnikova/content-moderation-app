@@ -42,8 +42,8 @@ const BarChart = ({ labels, values, period, label }) => {
         ]
     };
 
-    console.log("values: ", values)
-    console.log("labels: ", labels)
+   // console.log("values: ", values)
+   // console.log("labels: ", labels)
     const options = {
         responsive: true,
         scales: {

@@ -66,7 +66,7 @@ const AdsDetailPage = () => {
     // загрузка карточек по бокам для возможности листать влево-вправо
     useEffect(() => {
         //    console.log("totalItems: ", totalItems)
-        console.log("id-page: ", idPage)
+        //console.log("id-page: ", idPage)
         fetchSideCards()
     }, [params.id])
 

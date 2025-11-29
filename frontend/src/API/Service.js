@@ -234,4 +234,9 @@ export default class Service {
         return response
     }
 
+    static async getModerator() {
+        const response = await axios.get(`http://localhost:3001/api/v1/moderators/me`);
+        return response
+    }
+
 }

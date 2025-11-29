@@ -26,6 +26,15 @@ const DEFAULT_DECISION = {
     "requestChanges": 0
 }
 
+const DEFAULT_MODERINFO = {
+    "name": "",
+    "email": "",
+    "role": "",
+    "permissions": ""
+}
+
+const PERSMISSION = ['approve_ads', 'reject_ads', 'request_changes', 'view_stats']
+
 const StatisticsPage = () => {
 
     const [stats, setStats] = useState({
@@ -39,6 +48,8 @@ const StatisticsPage = () => {
 
     })
 
+    const [moderInfo, setModerInfo] = useState(DEFAULT_MODERINFO)
+
     const [graphic, setGraphic] = useState([])
 
     const [period, setPeriod] = useState(PERIOD_MONTH)
@@ -47,29 +58,39 @@ const StatisticsPage = () => {
 
     const [categories, setCategories] = useState({})
 
+    const [fetchModer, isLoadingModer, errorModer] = useFetching(async () => {
+        const response = await Service.getModerator();
+       // console.log("moder: ", response.data)
+        setModerInfo(response.data)
+    })
+
     const [fetchStats, isLoadingStats, errorStats] = useFetching(async () => {
         const response = await Service.getStats(PERIOD[period], null, null);
-        console.log("stats: ", response.data)
+       // console.log("stats: ", response.data)
         setStats(response.data)
     })
 
     const [fetchActivity, isLoadingActivity, errorActivity] = useFetching(async () => {
         const response = await Service.getActivityGraphic(PERIOD[period], null, null);
         setGraphic(response.data)
-        console.log("activity: ", response.data)
+       // console.log("activity: ", response.data)
     })
 
     const [fetchDecisions, isLoadingDecisions, errorDecisions] = useFetching(async () => {
         const response = await Service.getDecisionGraphic(PERIOD[period], null, null);
         setDecision(response.data)
-        console.log("decision: ", response.data)
+     //   console.log("decision: ", response.data)
     })
 
     const [fetchCategories, isLoadingCategories, errorCategories] = useFetching(async () => {
         const response = await Service.getCategoryGraphic(PERIOD[period], null, null);
         setCategories(response.data)
-        console.log("categories: ", response.data)
+       // console.log("categories: ", response.data)
     })
+
+    useEffect(() => {
+        fetchModer()
+    }, [])
 
     useEffect(() => {
         fetchStats()
@@ -95,9 +116,39 @@ const StatisticsPage = () => {
         return `${day}.${month}`;
     };
 
-    // totalMonth = 0, totalWeek = 0, totalToday = 3 - это КАК?
+    const getPermisson = (permission) => {
+        const result = []
+        if (permission.includes(PERSMISSION[0]))
+            result.push("Одобр.")
+        if (permission.includes(PERSMISSION[1]))
+            result.push("Отклон.")
+        if (permission.includes(PERSMISSION[2]))
+            result.push("Возврат")
+        return result.join(" ")
+    }
+
+    // totalMonth = 0, totalWeek = 0, totalToday = 3 - это КАК? Вопрос к API
     return (
         <div className={cl.stats_page_layout}>
+
+            <div className={cl.moder_panel}>
+                <p><b>Данные модератора</b></p>
+                <div style={{ display: "flex", gap:"20px"}}>
+                    <div style={{ display: "flex", flexDirection: "column" }}>
+                        <p>Имя:</p>
+                        <p>Почта:</p>
+                        <p>Должность:</p>
+                        <p>Доступные действия:</p>
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column" }}>
+                        <p>{moderInfo.name}</p>
+                        <p>{moderInfo.email}</p>
+                        <p>{moderInfo.role}</p>
+                        <p>{getPermisson(moderInfo.permissions)}</p>
+                    </div>
+                </div>
+            </div>
+
             <div className={cl.period_panel}>
                 <p>Период: </p>
                 <div className={cl.period_btns_container}>
@@ -187,7 +238,7 @@ const StatisticsPage = () => {
             </div>
 
 
-        </div>
+        </div >
     )
 }
 
