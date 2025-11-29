@@ -7,6 +7,7 @@ import AdsDetailPage from './pages/AdsDetailPage';
 import { FilterAndSortContext } from './context';
 import { useState } from 'react';
 import StatisticsPage from './pages/StatiscticsPage';
+import NavBar from './components/NavBar';
 
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
   return (
     <FilterAndSortContext.Provider value={{ filter, setFilter, sort, setSort, idPage, setIdPage, totalItems, setTotalItems}}>
       <BrowserRouter>
+        <NavBar />
         <Routes>
           {routes.map((route) =>
             <Route
