@@ -1,5 +1,6 @@
 import axios from "axios"
 import { CATEGORIES, CATEGORY_DEFAULT, PRIORITY_HIGH, PRIORITY_USUAL, SORT_COST, SORT_DATE, SORT_PRIORITY, STATUS_ACCEPTED, STATUS_DECLINED, STATUS_DRAFT, STATUS_INPRROCESS, STATUSES } from "../pages/AdsPage";
+import { PERIOD_TOTAL } from "../pages/StatiscticsPage";
 
 export default class Service {
 
@@ -188,13 +189,49 @@ export default class Service {
 
     // все переменные - строками, первая - из массива PERIOD, даты - даты в виде строки
     static async getStats(period, startDate, endDate) {
-        const response = await axios.get(`http://localhost:3001/api/v1//stats/summary`, {
-            params: {
-                priod: period
-            }
+        let params = {}
+        //if (period != PERIOD_TOTAL)
+        params.period = period
+        const response = await axios.get(`http://localhost:3001/api/v1/stats/summary`, {
+            params: params
         });
-        //console.log("DRAFT request")
-
         return response
     }
+
+    static async getActivityGraphic(period, startDate, endDate) {
+        let params = {}
+        //if (period != PERIOD_TOTAL)
+        params.period = period
+
+        const response = await axios.get(`http://localhost:3001/api/v1/stats/chart/activity`, {
+            params: params
+        });
+        //console.log("params for activity: ", params)
+        return response
+    }
+
+    static async getDecisionGraphic(period, startDate, endDate) {
+        let params = {}
+        //if (period != PERIOD_TOTAL)
+        params.period = period
+
+        const response = await axios.get(`http://localhost:3001/api/v1/stats/chart/decisions`, {
+            params: params
+        });
+        //console.log("params for decision: ", params)
+        return response
+    }
+
+    static async getCategoryGraphic(period, startDate, endDate) {
+        let params = {}
+        //if (period != PERIOD_TOTAL)
+        params.period = period
+
+        const response = await axios.get(`http://localhost:3001/api/v1/stats/chart/categories`, {
+            params: params
+        });
+        //console.log("params for categor: ", params)
+        return response
+    }
+
 }

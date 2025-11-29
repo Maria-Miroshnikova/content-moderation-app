@@ -3,12 +3,28 @@ import { useFetching } from "../hooks/useFetching"
 import cl from "./StatisticsPage.module.css"
 import Service from "../API/Service"
 import { useEffect, useState } from "react"
+import BarChart from "../components/ui/BarChart"
+import PieChart from "../components/ui/PieChart"
 
 export const PERIOD = ["today", "week", "month", "custom"]
-export const PERIOD_TODAY= 0;
+export const PERIOD_TODAY = 0;
 export const PERIOD_WEEK = 1;
 export const PERIOD_MONTH = 2;
 export const PERIOD_CUSTOM = 3;
+//export const PERIOD_TOTAL = 4;
+
+const DEFAULT_ACTIVITY_ITEM = {
+    "date": 0,
+    "approved": 0,
+    "rejected": 0,
+    "requestChanges": 0
+}
+
+const DEFAULT_DECISION = {
+    "approved": 0,
+    "rejected": 0,
+    "requestChanges": 0
+}
 
 const StatisticsPage = () => {
 
@@ -23,23 +39,61 @@ const StatisticsPage = () => {
 
     })
 
+    const [graphic, setGraphic] = useState([])
+
     const [period, setPeriod] = useState(PERIOD_MONTH)
+
+    const [decisions, setDecision] = useState(DEFAULT_DECISION)
+
+    const [categories, setCategories] = useState({})
 
     const [fetchStats, isLoadingStats, errorStats] = useFetching(async () => {
         const response = await Service.getStats(PERIOD[period], null, null);
-        console.log(response.data)
+        console.log("stats: ", response.data)
         setStats(response.data)
+    })
+
+    const [fetchActivity, isLoadingActivity, errorActivity] = useFetching(async () => {
+        const response = await Service.getActivityGraphic(PERIOD[period], null, null);
+        setGraphic(response.data)
+        console.log("activity: ", response.data)
+    })
+
+    const [fetchDecisions, isLoadingDecisions, errorDecisions] = useFetching(async () => {
+        const response = await Service.getDecisionGraphic(PERIOD[period], null, null);
+        setDecision(response.data)
+        console.log("decision: ", response.data)
+    })
+
+    const [fetchCategories, isLoadingCategories, errorCategories] = useFetching(async () => {
+        const response = await Service.getCategoryGraphic(PERIOD[period], null, null);
+        setCategories(response.data)
+        console.log("categories: ", response.data)
     })
 
     useEffect(() => {
         fetchStats()
+        fetchActivity()
+        fetchDecisions()
+        fetchCategories()
     }, [period])
 
     const getMinutes = (ms) => {
-        let minutes = (ms / 1000) / 60;      // в минуты
-        let roundedMinutes = Math.round(minutes * 10) / 10;
-        return roundedMinutes
-    }
+        if (!ms || ms < 0) return "0 мин 0.0 сек";
+
+        const totalSeconds = ms / 1000;
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = +((totalSeconds % 60).toFixed(1)); // 1 знак после запятой
+
+        return `${minutes} мин ${seconds} сек`;
+    };
+
+    const getFormatDateDM = (dateStr) => {
+        const d = new Date(dateStr);
+        const day = String(d.getDate()).padStart(2, "0");
+        const month = String(d.getMonth() + 1).padStart(2, "0");
+        return `${day}.${month}`;
+    };
 
     // totalMonth = 0, totalWeek = 0, totalToday = 3 - это КАК?
     return (
@@ -70,18 +124,20 @@ const StatisticsPage = () => {
                     >30д</button>
                 </div>
             </div>
-            
+
 
             <div className={cl.stats_layout}>
                 <div className={cl.stats_container}>
                     <div className={cl.stats_panel}>
                         <p>Проверено</p>
                         <p>{period === PERIOD_TODAY
-                        ? stats.totalReviewedToday
-                        : (period === PERIOD_WEEK
-                            ? stats.totalReviewedThisWeek
-                            : stats.totalReviewedThisMonth
-                        )}</p>
+                            ? stats.totalReviewedToday
+                            : (period === PERIOD_WEEK
+                                ? stats.totalReviewedThisWeek
+                                : (period === PERIOD_MONTH
+                                    ? stats.totalReviewedThisMonth
+                                    : stats.totalReviewedThisMonthd
+                                ))}</p>
                     </div>
                     <div className={cl.stats_panel}>
                         <p>Одобрено</p>
@@ -95,16 +151,39 @@ const StatisticsPage = () => {
                     </div>
                     <div className={cl.stats_panel}>
                         <p>Ср. время</p>
-                        <p>{getMinutes(stats.averageReviewTime)} мин</p>
+                        <p>{getMinutes(stats.averageReviewTime)}</p>
                     </div>
                 </div>
             </div>
 
             <div className={cl.graphic_container}>
-                график активности
+                <BarChart
+                    labels={graphic.map((g) => getFormatDateDM(g.date))}
+                    values={graphic.map((g) => (g.rejected + g.approved + g.requestChanges))}
+                    period={period}
+                    label={"Количество обработанных объявлений"}
+                />
             </div>
             <div className={cl.graphic_container}>
-                график решений
+                <PieChart
+                    approved={decisions.approved}
+                    rejected={decisions.rejected}
+                    requestChanges={decisions.requestChanges}
+                />
+                <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                    <p>Одобрено: {Number(decisions.approved.toFixed(1))}%</p>
+                    <p>Отклонено: {Number(decisions.rejected.toFixed(1))}%</p>
+                    <p>Возвращено: {Number(decisions.requestChanges.toFixed(1))}%</p>
+                </div>
+            </div>
+
+            <div className={cl.graphic_container}>
+                <BarChart
+                    labels={Object.entries(categories).map((i) => i[0])}
+                    values={Object.entries(categories).map((i) => i[1])}
+                    period={period}
+                    label={"Количество обработанных объявлений в категории"}
+                />
             </div>
 
 

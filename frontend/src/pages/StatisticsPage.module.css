@@ -62,7 +62,8 @@
 
     padding: 10px;
 
-    min-height: 10vh;
+    min-height: 5vh;
+    max-height: 5vh;
 }
 .stats_panel p {
     text-align: center;
@@ -73,5 +74,9 @@
     border-radius: 15px;
 
     padding: 10px;
-    min-height: 25vh;
+    min-height: 20vh;
+    max-height: 20vh;
+    display: flex;
+    justify-content: center;
+    gap: 20px
 }
