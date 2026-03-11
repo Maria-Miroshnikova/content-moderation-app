@@ -27,6 +27,9 @@ const Card = ({ card, id}: CardProps) => {
     }*/
 
     //console.log(props)
+
+
+     // TODO: next умеет лучше отрисовывать картинки!!!
     return (
         <div className={cl.card}>
             <img src={card.img} />

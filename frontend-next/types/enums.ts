@@ -42,10 +42,10 @@ export enum EPriority {
 // TODO: названия
 export const PRIORITY_META: Record<
     EPriority,
-    { title: string }
+    { title: string, server: string }
 > = {
-    [EPriority.HIGH]: { title: "Срочный" },
-    [EPriority.USUAL]: { title: "Обычный" }
+    [EPriority.HIGH]: { title: "Срочный", server: "normal" },
+    [EPriority.USUAL]: { title: "Обычный", server: "high" }
 }
 
 export enum EStatus {
@@ -60,8 +60,22 @@ export const STATUS_META: Record<
     EStatus,
     { title: string, server: string }
 > = {
-    [EStatus.ACCEPTED]: { title: "Одобрена", server:"" },
-    [EStatus.INPROCESS]: { title: "На модерации", server:"" },
-    [EStatus.DRAFT]: { title: "Возвращена", server:"" },
-    [EStatus.DECLINED]: { title: "Отклонена", server:"" },
+    [EStatus.ACCEPTED]: { title: "Одобрена", server: "approved" },
+    [EStatus.INPROCESS]: { title: "На модерации", server: "pending" },
+    [EStatus.DRAFT]: { title: "Возвращена", server: "draft" },
+    [EStatus.DECLINED]: { title: "Отклонена", server: "rejected" },
 };
+
+export const STATUS_BY_SERVER_TITLE = Object.fromEntries(
+    Object.entries(STATUS_META).map(([id, meta]) => [
+        meta.server,
+        Number(id)
+    ])
+);
+
+export const PRIORITY_BY_SERVER_TITLE = Object.fromEntries(
+    Object.entries(PRIORITY_META).map(([id, meta]) => [
+        meta.server,
+        Number(id)
+    ])
+);

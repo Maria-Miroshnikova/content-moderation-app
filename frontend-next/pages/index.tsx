@@ -6,6 +6,8 @@ import CardList from '../components/CardList';
 import { ICard } from '../types/types';
 import { useState } from 'react';
 import { ECategory, EPriority, EStatus } from '../types/enums';
+import { IGetAdsAnswer } from '../types/server_types';
+import { mapAdToCard } from '../server/dto_to_ui_map';
 
 
 
@@ -45,7 +47,7 @@ export const STATUSES = [
     "pending", "approved", "rejected", "draft"
 ]*/
 
-const AdsPage = () => {
+const AdsPage = ({users}) => {
 
     /* const [cards, setCards] = useState([])
  
@@ -103,6 +105,7 @@ const AdsPage = () => {
     
                     <PaginationBar totalPages={totalPages} totalItems={totalItems} page={page} setPage={setPage} />
     */
+    console.log(users)
 
     const [cards, setCards] = useState<ICard[]>([
         {
@@ -152,10 +155,32 @@ const AdsPage = () => {
                     <CardsFilterForm filter={filter} setFilter={setFilter} />
                     <CardsSortForm sortSettings={sort} setSortSettings={setSort} />
                 </div>
-                <CardList cards={cards} page={page} limit={limit} />
+                <CardList cards={users} page={page} limit={limit}/>
             </div>
         </div>
     );
 }
 
 export default AdsPage;
+
+export async function getStaticProps(context) {
+    /*const params = {
+        limit: limit,
+        page: page,
+        minPrice: filter.cost_min,
+        maxPrice: filter.cost_max,
+    }*/
+    //console.log("min: ", filter.cost_min, " max: ", filter.cost_max)
+
+    //this.setFilterParams(params, filter)
+    //this.setSortParams(params, sort)
+    //console.log("params after settings: ", params)
+
+    const response = await fetch('http://localhost:3001/api/v1/ads')
+    const response_json: IGetAdsAnswer = await response.json()
+    const users: ICard[] = response_json.ads.map(mapAdToCard)
+
+    return {
+        props: { users }
+    }
+}
