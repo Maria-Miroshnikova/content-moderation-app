@@ -1,6 +1,7 @@
 import { useFilterAndSortContext } from '../context/index';
 import '../styles/PageAds.module.css';
 import CardsFilterForm from '../components/CardsFilterForm';
+import CardsSortForm from '../components/CardsSortForm';
 
 
 
@@ -106,6 +107,7 @@ const AdsPage = () => {
             <div className="card_list_layout">
                 <div className='panel'>
                     <CardsFilterForm filter={filter} setFilter={setFilter}/>
+                    <CardsSortForm sortSettings={sort} setSortSettings={setSort} />
                 </div>
             </div>
         </div>

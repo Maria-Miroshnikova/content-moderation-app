@@ -21,17 +21,17 @@ export const FILTER_DEFAULT: IFilter = {
 }
 
 export enum ESortId {
-    SORT_DEFAULT = -1,
-    SORT_DATE = 0,
-    SORT_COST = 1,
-    SORT_PRIORITY = 2
+    DEFAULT = -1,
+    DATE = 0,
+    COST = 1,
+    PRIORITY = 2
 }
 
 export enum ESortName {
-    SORT_DEFAULT = "",
-    SORT_DATE = "По дате",
-    SORT_COST = "По цене",
-    SORT_PRIORITY = "По приоритету"
+    DEFAULT = "Сортировать по...",
+    DATE = "По дате",
+    COST = "По цене",
+    PRIORITY = "По приоритету"
 }
 
 export interface ISort {
@@ -53,7 +53,7 @@ export enum ECategoryId {
     Hobby = 3
 }
 export enum ECategoryName {
-    Default = "",
+    Default = "Категория...",
     Gift = "Бесплатно",
     Auto = "Автомобили",
     Pets = "Домашние животные",
