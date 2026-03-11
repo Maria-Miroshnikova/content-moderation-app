@@ -1,5 +1,6 @@
 import { createContext, FC, ReactNode, useContext, useState } from "react";
-import { ESortId, FILTER_DEFAULT, IFilter, ISort } from "../types/types";
+import { FILTER_DEFAULT, IFilter, ISort } from "../types/types";
+import { ESort } from "../types/enums";
 
 export interface IFilterAndSortContext {
     filter: IFilter,
@@ -21,7 +22,7 @@ interface FilterAndSortProviderProps {
 export const FilterAndSortProvider: FC<FilterAndSortProviderProps> = ({ children }) => {
 
     const [sort, setSort] = useState<ISort>({
-        type: ESortId.SORT_DEFAULT,
+        type: ESort.DEFAULT,
         sort_up: true
     })
 

@@ -1,3 +1,5 @@
+import { ECategory, EPriority, ESort, EStatus } from "./enums"
+
 export interface IFilter {
     search: string,
     cost_min: number,
@@ -20,22 +22,8 @@ export const FILTER_DEFAULT: IFilter = {
     status_draft: true,
 }
 
-export enum ESortId {
-    DEFAULT = -1,
-    DATE = 0,
-    COST = 1,
-    PRIORITY = 2
-}
-
-export enum ESortName {
-    DEFAULT = "Сортировать по...",
-    DATE = "По дате",
-    COST = "По цене",
-    PRIORITY = "По приоритету"
-}
-
 export interface ISort {
-    type: ESortId,
+    type: ESort,
     sort_up: boolean
 }
 
@@ -44,18 +32,14 @@ export interface ICategory {
     name: string
 }
 
-// не знаю, нужно ли это!
-export enum ECategoryId {
-    Default = -1,
-    Gift = 0,
-    Auto = 1,
-    Pets = 2,
-    Hobby = 3
-}
-export enum ECategoryName {
-    Default = "Категория...",
-    Gift = "Бесплатно",
-    Auto = "Автомобили",
-    Pets = "Домашние животные",
-    Hobby = "Хобби"
+export interface ICard {
+    id: number,
+    title: string,
+    cost: number,
+    priority: EPriority,
+    status: EStatus,
+    date: string,
+    category: ECategory,
+    categoryName: string, // TODO: нужно ли?
+    img: string | null
 }

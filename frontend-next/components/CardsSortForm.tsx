@@ -1,5 +1,6 @@
 import React, { FC } from "react";
-import { ESortId, ESortName, ISort } from "../types/types";
+import { ISort } from "../types/types";
+import { ESort, SORT_META } from "../types/enums";
 
 interface CardsSortFormProps {
     sortSettings: ISort,
@@ -15,13 +16,10 @@ const CardsSortForm: FC<CardsSortFormProps> = ({ sortSettings, setSortSettings }
                     value={sortSettings.type}
                     onChange={e => setSortSettings({ ...sortSettings, type: Number(e.target.value) })}
                 >
-                    <option value={ESortId.DEFAULT}>{ESortName.DEFAULT}</option>
-                    <option value={ESortId.DATE}>{ESortName.DATE}</option>
-                    <option value={ESortId.COST}>{ESortName.COST}</option>
-                    <option value={ESortId.PRIORITY}>{ESortName.PRIORITY}</option>
+                    {Object.entries(SORT_META).map(([id, meta]) => <option key={id} value={id}>{meta.title}</option>)}
                 </select>
 
-                {[ESortId.DATE, ESortId.COST].includes(sortSettings.type) && (
+                {[ESort.DATE, ESort.COST].includes(sortSettings.type) && (
                     <div className='checkbox'>
                         <input type="checkbox"
                             id="sort_up"
