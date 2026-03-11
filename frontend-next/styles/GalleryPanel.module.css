@@ -1,0 +1,14 @@
+.img_container {
+    max-width: ;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    /* два столбца */
+    grid-template-rows: 1fr 1fr;
+    /* две строки */
+    gap: 8px;
+    flex: 1;
+}
+
+.img_container img {
+    max-width: 200px;
+}
