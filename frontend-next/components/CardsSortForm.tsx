@@ -4,17 +4,17 @@ import { ESort, SORT_META } from "../types/enums";
 
 interface CardsSortFormProps {
     sortSettings: ISort,
-    setSortSettings: React.Dispatch<React.SetStateAction<ISort>>
+    changeSortSettings: (sortSettings: ISort) => void
 }
 
-const CardsSortForm: FC<CardsSortFormProps> = ({ sortSettings, setSortSettings }) => {
+const CardsSortForm: FC<CardsSortFormProps> = ({ sortSettings, changeSortSettings }) => {
     return (
         <div>
             <p>Сортировка:</p>
             <div className="sort">
                 <select
                     value={sortSettings.type}
-                    onChange={e => setSortSettings({ ...sortSettings, type: Number(e.target.value) })}
+                    onChange={e => changeSortSettings({ ...sortSettings, type: Number(e.target.value) })}
                 >
                     {Object.entries(SORT_META).map(([id, meta]) => <option key={id} value={id}>{meta.title}</option>)}
                 </select>
@@ -24,7 +24,7 @@ const CardsSortForm: FC<CardsSortFormProps> = ({ sortSettings, setSortSettings }
                         <input type="checkbox"
                             id="sort_up"
                             checked={sortSettings.sort_up}
-                            onChange={e => setSortSettings({ ...sortSettings, sort_up: e.target.checked })}
+                            onChange={e => changeSortSettings({ ...sortSettings, sort_up: e.target.checked })}
                         />
                         <label htmlFor="sort_up">По возрастанию</label>
                     </div>

@@ -1,3 +1,5 @@
+//"use client"
+
 import { useFilterAndSortContext } from '../context/index';
 import cl from '../styles/PageAds.module.css';
 import CardsFilterForm from '../components/CardsFilterForm';
@@ -47,7 +49,7 @@ export const STATUSES = [
     "pending", "approved", "rejected", "draft"
 ]*/
 
-const AdsPage = ({users}) => {
+async function AdsPage() {
 
     /* const [cards, setCards] = useState([])
  
@@ -105,7 +107,7 @@ const AdsPage = ({users}) => {
     
                     <PaginationBar totalPages={totalPages} totalItems={totalItems} page={page} setPage={setPage} />
     */
-    console.log(users)
+    //console.log(users)
 
     const [cards, setCards] = useState<ICard[]>([
         {
@@ -148,6 +150,8 @@ const AdsPage = ({users}) => {
     const [page, setPage] = useState(1)
     const [limit, setLimit] = useState(10)
 
+    const users = await getAds(limit, page)
+
     return (
         <div className={cl.AdsPage}>
             <div className={cl.card_list_layout}>
@@ -155,14 +159,14 @@ const AdsPage = ({users}) => {
                     <CardsFilterForm filter={filter} setFilter={setFilter} />
                     <CardsSortForm sortSettings={sort} setSortSettings={setSort} />
                 </div>
-                <CardList cards={users} page={page} limit={limit}/>
+                <CardList cards={cards} page={page} limit={limit} />
             </div>
         </div>
     );
 }
 
 export default AdsPage;
-
+/*
 export async function getStaticProps(context) {
     /*const params = {
         limit: limit,
@@ -170,12 +174,12 @@ export async function getStaticProps(context) {
         minPrice: filter.cost_min,
         maxPrice: filter.cost_max,
     }*/
-    //console.log("min: ", filter.cost_min, " max: ", filter.cost_max)
+//console.log("min: ", filter.cost_min, " max: ", filter.cost_max)
 
-    //this.setFilterParams(params, filter)
-    //this.setSortParams(params, sort)
-    //console.log("params after settings: ", params)
-
+//this.setFilterParams(params, filter)
+//this.setSortParams(params, sort)
+//console.log("params after settings: ", params)
+/*
     const response = await fetch('http://localhost:3001/api/v1/ads')
     const response_json: IGetAdsAnswer = await response.json()
     const users: ICard[] = response_json.ads.map(mapAdToCard)
@@ -183,4 +187,22 @@ export async function getStaticProps(context) {
     return {
         props: { users }
     }
+}*/
+
+async function getAds(limit: number, page: number) {
+    const response = await fetch('http://localhost:3001/api/v1/ads', {
+        next: {
+            revalidate: 60
+        }
+    })
+
+    if (!response.ok) throw new Error("Unable to fetch ads")
+
+    const response_json: IGetAdsAnswer = await response.json()
+    const users: ICard[] = response_json.ads.map(mapAdToCard)
+
+    return {
+        users
+    }
+
 }

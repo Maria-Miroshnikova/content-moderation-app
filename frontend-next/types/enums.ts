@@ -45,7 +45,7 @@ export const PRIORITY_META: Record<
     { title: string, server: string }
 > = {
     [EPriority.HIGH]: { title: "Срочный", server: "normal" },
-    [EPriority.USUAL]: { title: "Обычный", server: "high" }
+    [EPriority.USUAL]: { title: "Обычный", server: "urgent" }
 }
 
 export enum EStatus {

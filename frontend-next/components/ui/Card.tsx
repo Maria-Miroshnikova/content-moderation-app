@@ -28,6 +28,7 @@ const Card = ({ card, id}: CardProps) => {
 
     //console.log(props)
 
+    //console.log(card)
 
      // TODO: next умеет лучше отрисовывать картинки!!!
     return (

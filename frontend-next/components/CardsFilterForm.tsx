@@ -6,11 +6,12 @@ import { CATEGORY_META, ECategory } from "../types/enums";
 
 interface CardsFilterFormProps {
     filter: IFilter;
-    setFilter: React.Dispatch<React.SetStateAction<IFilter>>;
+    //setFilter: React.Dispatch<React.SetStateAction<IFilter>>;
+    changeFilter: (filter: IFilter) => void,
 //    categories: ;
 }
 
-const CardsFilterForm: FC<CardsFilterFormProps> = ({ filter, setFilter}) => {
+const CardsFilterForm: FC<CardsFilterFormProps> = ({ filter, changeFilter}) => {
 
 
     // TODO - самому их подкачивать
@@ -20,7 +21,7 @@ const CardsFilterForm: FC<CardsFilterFormProps> = ({ filter, setFilter}) => {
 
     const resetFilter = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
-        setFilter(FILTER_DEFAULT)
+        changeFilter(FILTER_DEFAULT)
     }
 
     return (
@@ -32,7 +33,7 @@ const CardsFilterForm: FC<CardsFilterFormProps> = ({ filter, setFilter}) => {
                 <input type="checkbox"
                     id="status_inprocess"
                     checked={filter.status_inprocess}
-                    onChange={e => setFilter({ ...filter, status_inprocess: e.target.checked })}
+                    onChange={e => changeFilter({ ...filter, status_inprocess: e.target.checked })}
                 />
                 <label htmlFor="status_inprocess">На модерации</label>
             </div>
@@ -40,7 +41,7 @@ const CardsFilterForm: FC<CardsFilterFormProps> = ({ filter, setFilter}) => {
                 <input type="checkbox"
                     id="status_accepted"
                     checked={filter.status_accepted}
-                    onChange={e => setFilter({ ...filter, status_accepted: e.target.checked })}
+                    onChange={e => changeFilter({ ...filter, status_accepted: e.target.checked })}
                 />
                 <label htmlFor="status_accepted">Одобрено</label>
             </div>
@@ -48,7 +49,7 @@ const CardsFilterForm: FC<CardsFilterFormProps> = ({ filter, setFilter}) => {
                 <input type="checkbox"
                     id="status_declined"
                     checked={filter.status_declined}
-                    onChange={e => setFilter({ ...filter, status_declined: e.target.checked })}
+                    onChange={e => changeFilter({ ...filter, status_declined: e.target.checked })}
                 />
                 <label htmlFor="status_declined">Отклонено</label>
             </div>
@@ -56,7 +57,7 @@ const CardsFilterForm: FC<CardsFilterFormProps> = ({ filter, setFilter}) => {
             <p>Категория:</p>
             <select
                 value={filter.category}
-                onChange={e => setFilter({ ...filter, category: Number(e.target.value)}) }
+                onChange={e => changeFilter({ ...filter, category: Number(e.target.value)}) }
             >
                 {Object.entries(CATEGORY_META).map(([id, meta]) => (<option key={id} value={id}>{meta.title}</option>))}
             </select>
@@ -66,18 +67,18 @@ const CardsFilterForm: FC<CardsFilterFormProps> = ({ filter, setFilter}) => {
                 <input type='number'
                     placeholder='oт'
                     value={filter.cost_min}
-                    onChange={e => setFilter({ ...filter, cost_min: Number(e.target.value) })}
+                    onChange={e => changeFilter({ ...filter, cost_min: Number(e.target.value) })}
                 />
                 <input type='number'
                     placeholder='до'
                     value={filter.cost_max}
-                    onChange={e => setFilter({ ...filter, cost_max: Number(e.target.value) })}
+                    onChange={e => changeFilter({ ...filter, cost_max: Number(e.target.value) })}
                 />
             </div>
 
             <input placeholder='Искать в названии...'
                 value={filter.search}
-                onChange={e => setFilter({ ...filter, search: e.target.value })}
+                onChange={e => changeFilter({ ...filter, search: e.target.value })}
                 type='text'
             />
 

@@ -1,3 +1,5 @@
+"use client"
+
 import { createContext, FC, ReactNode, useContext, useState } from "react";
 import { FILTER_DEFAULT, IFilter, ISort } from "../types/types";
 import { ESort } from "../types/enums";
