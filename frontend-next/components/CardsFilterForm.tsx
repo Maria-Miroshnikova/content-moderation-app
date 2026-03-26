@@ -2,7 +2,7 @@ import React, { FC } from "react";
 
 import cl from "../styles/Card.module.css"
 import { FILTER_DEFAULT, ICategory, IFilter } from "../types/types";
-import { CATEGORY_META, ECategory } from "../types/enums";
+import { CATEGORY_META } from "../types/enums";
 
 interface CardsFilterFormProps {
     filter: IFilter;
@@ -13,11 +13,7 @@ interface CardsFilterFormProps {
 
 const CardsFilterForm: FC<CardsFilterFormProps> = ({ filter, changeFilter}) => {
 
-
-    // TODO - самому их подкачивать
-    const categories: ICategory[] = [
-        {id: 1, name: "хобби"}, {id: 2, name: "авто"}
-    ]
+    //console.log("cardsFORM, filter: ", filter)
 
     const resetFilter = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
@@ -59,7 +55,7 @@ const CardsFilterForm: FC<CardsFilterFormProps> = ({ filter, changeFilter}) => {
                 value={filter.category}
                 onChange={e => changeFilter({ ...filter, category: Number(e.target.value)}) }
             >
-                {Object.entries(CATEGORY_META).map(([id, meta]) => (<option key={id} value={id}>{meta.title}</option>))}
+                {Object.entries(CATEGORY_META).map(([id, title]) => (<option key={id} value={id}>{title}</option>))}
             </select>
 
             <p>Диапазон цен:</p>

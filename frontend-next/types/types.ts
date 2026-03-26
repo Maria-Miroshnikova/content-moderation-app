@@ -43,3 +43,26 @@ export interface ICard {
     categoryName: string, // TODO: нужно ли?
     img: string | null
 }
+
+export const SORT_DEFAULT: ISort = {
+    type: ESort.DEFAULT,
+    sort_up: false
+}
+
+export const LIMIT_DEFAULT: number = 10;
+export const PAGE_DEFAULT: number = 1;
+
+
+export interface IStates {
+    filter: IFilter,
+    sort: ISort,
+    page: number,
+    limit: number
+}
+
+export const STATES_DEFAULT: IStates = {
+    filter: FILTER_DEFAULT,
+    sort: SORT_DEFAULT,
+    page: PAGE_DEFAULT,
+    limit: LIMIT_DEFAULT
+}

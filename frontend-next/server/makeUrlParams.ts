@@ -1,4 +1,4 @@
-import { ECategory, EStatus, STATUS_META } from "../types/enums";
+import { ECategory, ESort, ESortDirection, EStatus, SORT_META, STATUS_META } from "../types/enums";
 import { ISearchParams } from "../types/server_types"
 import { IFilter, ISort } from "../types/types";
 
@@ -6,58 +6,72 @@ export function makeUrlWithParams(params: ISearchParams, url: string) {
     const searchParams = new URLSearchParams()
     Object.entries(params).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
-            searchParams.append(key, String(value))
+            if (Array.isArray(value)) {
+                value.forEach(v => searchParams.append(key, String(v)))
+            } else {
+                searchParams.append(key, String(value))
+            }
         }
     })
+
+    //console.log(searchParams)
     const url_with_params = `${url}?${searchParams.toString()}`;
+   // console.log(url_with_params)
     return url_with_params;
 }
 
-const sort_enum = ['createdAt', 'price', 'priority'];
-const sort_dir = ['asc', 'desc'];
-
-function setFilterParams(params, filter: IFilter) {
+function setFilterParams(params: ISearchParams, filter: IFilter) {
     if (filter.category != ECategory.DEFAULT)
         params.categoryId = filter.category
 
     if (filter.search != "")
         params.search = filter.search
 
-    const statuses = []
+    const statuses: string[] = []
     if (filter.status_inprocess)
         statuses.push(STATUS_META[EStatus.INPROCESS].server)
     if (filter.status_accepted)
         statuses.push(STATUS_META[EStatus.ACCEPTED].server)
     if (filter.status_declined)
         statuses.push(STATUS_META[EStatus.DECLINED].server)
-    // TODO: почему тут нету if?
+    // TODO: почему тут нету if? UPD: наверное потому что нет и селекта под этот вариант, так что он всегда должен показываться
     statuses.push(STATUS_META[EStatus.DRAFT].server)
 
     params.status = statuses
     //console.log("status: ", statuses)
+
+    params.maxPrice = filter.cost_max;
+    params.minPrice = filter.cost_min;
 }
 
-function setSortParams(params, sort) {
-    if (sort.type === SORT_COST) {
-        params.sortBy = this.sort_enum[1]
+
+function setSortParams(params: ISearchParams, sort: ISort) {
+    if (sort.type === ESort.COST) {
+        params.sortBy = SORT_META[sort.type].server
         if (sort.sort_up === true)
-            params.sortOrder = this.sort_dir[0]
+            params.sortOrder = ESortDirection.UP
         else
-            params.sortOrder = this.sort_dir[1]
+            params.sortOrder = ESortDirection.DOWN
     }
-    else if (sort.type === SORT_DATE) {
-        params.sortBy = this.sort_enum[0]
+    else if (sort.type === ESort.DATE) {
+        params.sortBy = SORT_META[sort.type].server
         if (sort.sort_up === true)
-            params.sortOrder = this.sort_dir[0]
+            params.sortOrder = ESortDirection.UP
         else
-            params.sortOrder = this.sort_dir[1]
+            params.sortOrder = ESortDirection.DOWN
     }
-    else if (sort.type === SORT_PRIORITY)
-        params.sortBy = this.sort_enum[2]
+    else if (sort.type === ESort.PRIORITY) {
+        params.sortBy = SORT_META[sort.type].server;
+       // params.sortOrder = ESortDirection.DOWN
+    }
     //console.log("params after setSort: ", params)
 }
 
 export function makeISearchParamsFromStates(filter: IFilter, sort: ISort, page: number, limit: number) {
-
-
+    const params: ISearchParams = {};
+    setSortParams(params, sort);
+    setFilterParams(params, filter);
+    params.page = page.toString();
+    params.limit = limit.toString();
+    return params;
 }

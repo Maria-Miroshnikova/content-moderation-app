@@ -2,22 +2,24 @@ import cl from '../styles/PageAds.module.css';
 import CardsFilterForm from '../components/CardsFilterForm';
 import CardsSortForm from '../components/CardsSortForm';
 import CardList from '../components/CardList';
-import { ICard } from '../types/types';
-import { ECategory, EPriority, EStatus } from '../types/enums';
+import { ICard, IFilter, ISort } from '../types/types';
+import { EPriority, EStatus } from '../types/enums';
 import { IGetAdsAnswer, ISearchParams } from '../types/server_types';
 import { mapAdToCard } from '../server/dto_to_ui_map';
-import makeUrlWithParams from '../server/makeUrlParams';
+import {makeUrlWithParams} from '../server/makeUrlParams';
 import PageAdsClient from '../components/PageAdsClient';
 
 async function AdsPage({ searchParams }: { searchParams: ISearchParams }) {
 
     const params: ISearchParams = await searchParams;
-    // console.log(params)
+  //  const filter: IFilter = {};
+  //  const sort: ISort = {};
+    //console.log(params)
     const cards: ICard[] = await getAds(params)
 
     return (
         <div className={cl.AdsPage}>
-            <PageAdsClient cards={cards}/>
+            <PageAdsClient cards={cards} params={params}/>
         </div>
     );
 }

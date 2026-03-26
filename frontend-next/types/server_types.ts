@@ -3,15 +3,15 @@ import { ICard } from "./types";
 
 export interface ISearchParams {
     category?: string,
-    sort?: string,
     page?: string,
     minPrice?: number,
     maxPrice?: number,
     categoryId?: ECategory,
     search?: string,
-    status?: string,
+    status?: string | string[],
     sortBy?: string,
     sortOrder?: string,
+    limit?: string
 }
 
 export interface IGetAdsAnswer {
