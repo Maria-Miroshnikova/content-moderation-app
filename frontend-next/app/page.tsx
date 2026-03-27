@@ -2,12 +2,13 @@ import cl from '../styles/PageAds.module.css';
 import CardsFilterForm from '../components/CardsFilterForm';
 import CardsSortForm from '../components/CardsSortForm';
 import CardList from '../components/CardList';
-import { ICard, IFilter, ISort } from '../types/types';
+import { ICard, IFilter, ISort, IStates } from '../types/types';
 import { EPriority, EStatus } from '../types/enums';
 import { IAdPagination, IAdResponse, IGetAdsAnswer, ISearchParams } from '../types/server_types';
-import { mapAdToCard } from '../server/dto_to_ui_map';
+import { mapAdToCard, mapISearchParamsToStates } from '../server/dto_to_ui_map';
 import { makeUrlWithParams, reconstructSearchParamsFromUrl } from '../server/makeUrlParams';
 import PageAdsClient from '../components/PageAdsClient';
+import PaginationBar from '../components/ui/PaginationBar';
 
 async function AdsPage({ searchParams }: { searchParams: ISearchParams }) {
 
@@ -16,9 +17,16 @@ async function AdsPage({ searchParams }: { searchParams: ISearchParams }) {
 
     const adsResponse: IAdResponse = await getAds(params)
 
+    const states: IStates = mapISearchParamsToStates(params);
+
     return (
-        <div className={cl.AdsPage}>
-            <PageAdsClient cards={adsResponse.cards} params={params} pagination={adsResponse.pagination} />
+        <div className={cl.card_list_layout}>
+            <div className={cl.panel}>
+                <CardsFilterForm filter={states.filter} />
+                <CardsSortForm sortSettings={states.sort} />
+            </div>
+            <CardList cards={adsResponse.cards} page={states.page} limit={states.limit} />
+            <PaginationBar totalPages={adsResponse.pagination.totalPages} totalItems={adsResponse.pagination.totalItems} page={states.page} />
         </div>
     );
 }
@@ -42,7 +50,7 @@ async function getAds(params: ISearchParams) {
     //console.log(response_json)
     const cards: ICard[] = response_json.ads.map(mapAdToCard)
     const pagination: IAdPagination = response_json.pagination;
-    const adsResponse : IAdResponse = {
+    const adsResponse: IAdResponse = {
         cards: cards,
         pagination: pagination
     }

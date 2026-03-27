@@ -57,6 +57,8 @@ export function reconstructSearchParamsFromUrl(params: ISearchParams) {
 export function setFilterParams(params: ISearchParams, filter: IFilter) {
     if (filter.category != ECategory.DEFAULT)
         params.categoryId = filter.category
+    else
+        delete params.categoryId;
 
     if (filter.search != "")
         params.search = filter.search

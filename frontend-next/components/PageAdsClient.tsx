@@ -21,8 +21,6 @@ interface PageAdsClientProps {
 }
 
 function PageAdsClient({ cards, params, pagination }: PageAdsClientProps) {
-    const router = useRouter()
-
     const states: IStates = mapISearchParamsToStates(params);
 
     return (
