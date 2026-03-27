@@ -98,3 +98,8 @@ export interface IAdPagination {
     totalItems: number,
     totalPages: number
 }
+
+export interface IAdResponse {
+    cards: ICard[],
+    pagination: IAdPagination
+}

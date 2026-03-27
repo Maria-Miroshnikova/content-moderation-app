@@ -5,44 +5,40 @@ import cl from '../styles/PageAds.module.css';
 import CardsFilterForm from './CardsFilterForm';
 import CardsSortForm from './CardsSortForm';
 import CardList from './CardList';
-import { ICard, IFilter, ISort, IStates } from '../types/types';
+import { ICard, IFilter, ISort, IStates, PAGE_DEFAULT } from '../types/types';
 import { useState } from 'react';
 import { EPriority, EStatus } from '../types/enums';
-import { IGetAdsAnswer, ISearchParams } from '../types/server_types';
+import { IAdPagination, IGetAdsAnswer, ISearchParams } from '../types/server_types';
 import { mapAdToCard, mapISearchParamsToStates } from '../server/dto_to_ui_map';
 import { useRouter } from 'next/navigation';
 import { makeISearchParamsFromStates, makeUrlWithParams, makeUrlWithParamsNoDefault } from '../server/makeUrlParams';
+import PaginationBar from './ui/PaginationBar';
 
 interface PageAdsClientProps {
     cards: ICard[],
-    params: ISearchParams
-    //filter: IFilter,
-    //sort: ISort
+    params: ISearchParams,
+    pagination: IAdPagination
 }
 
-function PageAdsClient({ cards, params }: PageAdsClientProps) {
-   // console.log(cards)
+function PageAdsClient({ cards, params, pagination }: PageAdsClientProps) {
     const router = useRouter()
-    //const { filter, setFilter, sort, setSort, totalItems, setTotalItems } = useFilterAndSortContext()
 
     const states: IStates = mapISearchParamsToStates(params);
 
-    //const [page, setPage] = useState(1)
-    //const [limit, setLimit] = useState(10)
-
-    // TODO: категории пока что скорее всего не работают
     function handleFilterChange(filter: IFilter) {
-        //setFilter(filter);
-        //console.log(filter);
-        let params: ISearchParams = makeISearchParamsFromStates(filter, states.sort, states.page, states.limit);
-        console.log(params);
-        let url_with_params = makeUrlWithParamsNoDefault(params, '/')//'/ads')
+        let params: ISearchParams = makeISearchParamsFromStates(filter, states.sort, PAGE_DEFAULT, states.limit);
+        let url_with_params = makeUrlWithParamsNoDefault(params, '/')
         router.replace(url_with_params);
     }
 
     function handleSortChange(sort: ISort) {
-        //setSort(sort);
-        let params: ISearchParams = makeISearchParamsFromStates(states.filter, sort, states.page, states.limit);
+        let params: ISearchParams = makeISearchParamsFromStates(states.filter, sort, PAGE_DEFAULT, states.limit);
+        let url_with_params = makeUrlWithParamsNoDefault(params, '/')
+        router.replace(url_with_params);
+    }
+
+    function handlePageChange(i: number) {
+        let params: ISearchParams = makeISearchParamsFromStates(states.filter, states.sort, i, states.limit);
         let url_with_params = makeUrlWithParamsNoDefault(params, '/')
         router.replace(url_with_params);
     }
@@ -54,6 +50,7 @@ function PageAdsClient({ cards, params }: PageAdsClientProps) {
                 <CardsSortForm sortSettings={states.sort} changeSortSettings={handleSortChange} />
             </div>
             <CardList cards={cards} page={states.page} limit={states.limit} />
+            <PaginationBar totalPages={pagination.totalPages} totalItems={pagination.totalItems} page={states.page} setPage={handlePageChange} />
         </div>
     );
 }

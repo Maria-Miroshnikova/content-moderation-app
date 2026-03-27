@@ -4,30 +4,28 @@ import CardsSortForm from '../components/CardsSortForm';
 import CardList from '../components/CardList';
 import { ICard, IFilter, ISort } from '../types/types';
 import { EPriority, EStatus } from '../types/enums';
-import { IGetAdsAnswer, ISearchParams } from '../types/server_types';
+import { IAdPagination, IAdResponse, IGetAdsAnswer, ISearchParams } from '../types/server_types';
 import { mapAdToCard } from '../server/dto_to_ui_map';
-import {makeUrlWithParams, reconstructSearchParamsFromUrl} from '../server/makeUrlParams';
+import { makeUrlWithParams, reconstructSearchParamsFromUrl } from '../server/makeUrlParams';
 import PageAdsClient from '../components/PageAdsClient';
 
 async function AdsPage({ searchParams }: { searchParams: ISearchParams }) {
 
     const params: ISearchParams = await searchParams;
     reconstructSearchParamsFromUrl(params);
-  //  const filter: IFilter = {};
-  //  const sort: ISort = {};
-    console.log(params)
-    const cards: ICard[] = await getAds(params)
+
+    const adsResponse: IAdResponse = await getAds(params)
 
     return (
         <div className={cl.AdsPage}>
-            <PageAdsClient cards={cards} params={params}/>
+            <PageAdsClient cards={adsResponse.cards} params={params} pagination={adsResponse.pagination} />
         </div>
     );
 }
 
 export default AdsPage;
 
-async function getAds(params : ISearchParams) {
+async function getAds(params: ISearchParams) {
     const url = `http://localhost:3001/api/v1/ads`
     const url_with_params = makeUrlWithParams(params, url)
 
@@ -41,7 +39,12 @@ async function getAds(params : ISearchParams) {
     if (!response.ok) throw new Error("Unable to fetch ads")
 
     const response_json: IGetAdsAnswer = await response.json()
-    //console.log(response_json.ads)
+    //console.log(response_json)
     const cards: ICard[] = response_json.ads.map(mapAdToCard)
-    return cards;
+    const pagination: IAdPagination = response_json.pagination;
+    const adsResponse : IAdResponse = {
+        cards: cards,
+        pagination: pagination
+    }
+    return adsResponse;
 }
