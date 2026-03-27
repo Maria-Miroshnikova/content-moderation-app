@@ -1,6 +1,8 @@
-import { EPriority, ESort, ESortDirection, EStatus, PRIORITY_BY_SERVER_TITLE, SORT_META, STATUS_BY_SERVER_TITLE, STATUS_META } from "../types/enums";
-import { IAd, ISearchParams } from "../types/server_types";
+import { ReadonlyURLSearchParams } from "next/navigation";
+import { ECategory, EPriority, ESort, ESortDirection, EStatus, PRIORITY_BY_SERVER_TITLE, SORT_META, STATUS_BY_SERVER_TITLE, STATUS_META } from "../types/enums";
+import { getDefaultSearchParams, IAd, ISearchParams, SEARCHPARAMS_DEFAILT } from "../types/server_types";
 import { FILTER_DEFAULT, ICard, IFilter, ISort, IStates, SORT_DEFAULT, STATES_DEFAULT } from "../types/types";
+import { reconstructSearchParamsFromUrl } from "./makeUrlParams";
 
 export function mapAdToCard(ad: IAd): ICard {
     return {
@@ -18,8 +20,6 @@ export function mapAdToCard(ad: IAd): ICard {
 
 export function mapISearchParamsToStates(params: ISearchParams) {
 
-    let states: IStates = STATES_DEFAULT;
-
     //console.log(params)
     let filter: IFilter = {
         search: params.search ?? FILTER_DEFAULT.search,
@@ -28,8 +28,8 @@ export function mapISearchParamsToStates(params: ISearchParams) {
         category: Number(params.categoryId ?? FILTER_DEFAULT.category),
         status_inprocess: params.status ? params.status.includes(STATUS_META[EStatus.INPROCESS].server) : FILTER_DEFAULT.status_inprocess,
         status_accepted: params.status ? params.status.includes(STATUS_META[EStatus.ACCEPTED].server) : FILTER_DEFAULT.status_accepted,
-        status_declined:  params.status ? params.status.includes(STATUS_META[EStatus.DECLINED].server) : FILTER_DEFAULT.status_declined,
-        status_draft:  params.status ? params.status.includes(STATUS_META[EStatus.DRAFT].server) : FILTER_DEFAULT.status_draft,
+        status_declined: params.status ? params.status.includes(STATUS_META[EStatus.DECLINED].server) : FILTER_DEFAULT.status_declined,
+        status_draft: params.status ? params.status.includes(STATUS_META[EStatus.DRAFT].server) : FILTER_DEFAULT.status_draft,
     }
 
     //console.log(params)
@@ -45,10 +45,58 @@ export function mapISearchParamsToStates(params: ISearchParams) {
     let limit: number = Number(params.limit ?? 10);
     let page: number = Number(params.page ?? 1);
 
-    states.filter = filter;
-    states.sort = sort;
-    states.limit = limit;
-    states.page = page;
+    let states: IStates = {
+        filter: filter,
+        sort: sort,
+        limit: limit,
+        page: page
+    }
 
     return states;
+}
+
+export function parseSearchParams(sp: ReadonlyURLSearchParams): ISearchParams {
+    const params = getDefaultSearchParams();
+
+    if (sp.has('page')) {
+        params.page = sp.get('page')!
+    }
+
+    if (sp.has('limit')) {
+        params.limit = sp.get('limit')!
+    }
+
+    if (sp.has('minPrice')) {
+        params.minPrice = Number(sp.get('minPrice'))
+    }
+
+    if (sp.has('maxPrice')) {
+        params.maxPrice = Number(sp.get('maxPrice'))
+    }
+
+    if (sp.has('categoryId')) {
+        params.categoryId = Number(sp.get('categoryId')) as ECategory
+    }
+
+    if (sp.has('search')) {
+        params.search = sp.get('search')!
+    }
+
+    const status = sp.getAll('status')
+    if (status.length > 0) {
+        params.status = status;
+        reconstructSearchParamsFromUrl(params);
+    }
+
+    if (sp.has('sortBy')) {
+        params.sortBy = sp.get('sortBy')!
+    }
+
+    if (sp.has('sortOrder')) {
+        params.sortOrder = sp.get('sortOrder')!
+    }
+
+    //console.log("parsed url: ", params);
+
+    return params
 }

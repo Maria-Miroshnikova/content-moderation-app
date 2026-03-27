@@ -25,32 +25,14 @@ function PageAdsClient({ cards, params, pagination }: PageAdsClientProps) {
 
     const states: IStates = mapISearchParamsToStates(params);
 
-    function handleFilterChange(filter: IFilter) {
-        let params: ISearchParams = makeISearchParamsFromStates(filter, states.sort, PAGE_DEFAULT, states.limit);
-        let url_with_params = makeUrlWithParamsNoDefault(params, '/')
-        router.replace(url_with_params);
-    }
-
-    function handleSortChange(sort: ISort) {
-        let params: ISearchParams = makeISearchParamsFromStates(states.filter, sort, PAGE_DEFAULT, states.limit);
-        let url_with_params = makeUrlWithParamsNoDefault(params, '/')
-        router.replace(url_with_params);
-    }
-
-    function handlePageChange(i: number) {
-        let params: ISearchParams = makeISearchParamsFromStates(states.filter, states.sort, i, states.limit);
-        let url_with_params = makeUrlWithParamsNoDefault(params, '/')
-        router.replace(url_with_params);
-    }
-
     return (
         <div className={cl.card_list_layout}>
             <div className={cl.panel}>
-                <CardsFilterForm filter={states.filter} changeFilter={handleFilterChange} />
-                <CardsSortForm sortSettings={states.sort} changeSortSettings={handleSortChange} />
+                <CardsFilterForm filter={states.filter}/>
+                <CardsSortForm sortSettings={states.sort}/>
             </div>
             <CardList cards={cards} page={states.page} limit={states.limit} />
-            <PaginationBar totalPages={pagination.totalPages} totalItems={pagination.totalItems} page={states.page} setPage={handlePageChange} />
+            <PaginationBar totalPages={pagination.totalPages} totalItems={pagination.totalItems} page={states.page}/>
         </div>
     );
 }

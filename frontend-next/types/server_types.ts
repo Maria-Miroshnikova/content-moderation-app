@@ -26,6 +26,16 @@ export const SEARCHPARAMS_DEFAILT: ISearchParams = {
     limit: LIMIT_DEFAULT.toString()
 }
 
+export function getDefaultSearchParams(): ISearchParams {
+    return {
+        page: PAGE_DEFAULT.toString(),
+        minPrice: FILTER_DEFAULT.cost_min,
+        maxPrice: FILTER_DEFAULT.cost_max,
+        status: Object.values(STATUS_META).map(meta => meta.server),
+        limit: LIMIT_DEFAULT.toString(),
+    }
+}
+
 /*
 default settings:
 limit

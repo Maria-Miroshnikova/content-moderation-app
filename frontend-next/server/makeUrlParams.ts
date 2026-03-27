@@ -54,7 +54,7 @@ export function reconstructSearchParamsFromUrl(params: ISearchParams) {
     params.status = diff;
 }
 
-function setFilterParams(params: ISearchParams, filter: IFilter) {
+export function setFilterParams(params: ISearchParams, filter: IFilter) {
     if (filter.category != ECategory.DEFAULT)
         params.categoryId = filter.category
 
@@ -79,7 +79,7 @@ function setFilterParams(params: ISearchParams, filter: IFilter) {
 }
 
 
-function setSortParams(params: ISearchParams, sort: ISort) {
+export function setSortParams(params: ISearchParams, sort: ISort) {
     if (sort.type === ESort.COST) {
         params.sortBy = SORT_META[sort.type].server
         if (sort.sort_up === true)
@@ -96,6 +96,7 @@ function setSortParams(params: ISearchParams, sort: ISort) {
     }
     else if (sort.type === ESort.PRIORITY) {
         params.sortBy = SORT_META[sort.type].server;
+        delete params.sortOrder;
        // params.sortOrder = ESortDirection.DOWN
     }
     //console.log("params after setSort: ", params)
