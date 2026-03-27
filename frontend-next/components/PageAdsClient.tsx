@@ -11,7 +11,7 @@ import { EPriority, EStatus } from '../types/enums';
 import { IGetAdsAnswer, ISearchParams } from '../types/server_types';
 import { mapAdToCard, mapISearchParamsToStates } from '../server/dto_to_ui_map';
 import { useRouter } from 'next/navigation';
-import { makeISearchParamsFromStates, makeUrlWithParams } from '../server/makeUrlParams';
+import { makeISearchParamsFromStates, makeUrlWithParams, makeUrlWithParamsNoDefault } from '../server/makeUrlParams';
 
 interface PageAdsClientProps {
     cards: ICard[],
@@ -36,14 +36,14 @@ function PageAdsClient({ cards, params }: PageAdsClientProps) {
         //console.log(filter);
         let params: ISearchParams = makeISearchParamsFromStates(filter, states.sort, states.page, states.limit);
         console.log(params);
-        let url_with_params = makeUrlWithParams(params, '/')//'/ads')
+        let url_with_params = makeUrlWithParamsNoDefault(params, '/')//'/ads')
         router.replace(url_with_params);
     }
 
     function handleSortChange(sort: ISort) {
         //setSort(sort);
         let params: ISearchParams = makeISearchParamsFromStates(states.filter, sort, states.page, states.limit);
-        let url_with_params = makeUrlWithParams(params, '/')
+        let url_with_params = makeUrlWithParamsNoDefault(params, '/')
         router.replace(url_with_params);
     }
 

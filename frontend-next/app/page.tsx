@@ -6,15 +6,16 @@ import { ICard, IFilter, ISort } from '../types/types';
 import { EPriority, EStatus } from '../types/enums';
 import { IGetAdsAnswer, ISearchParams } from '../types/server_types';
 import { mapAdToCard } from '../server/dto_to_ui_map';
-import {makeUrlWithParams} from '../server/makeUrlParams';
+import {makeUrlWithParams, reconstructSearchParamsFromUrl} from '../server/makeUrlParams';
 import PageAdsClient from '../components/PageAdsClient';
 
 async function AdsPage({ searchParams }: { searchParams: ISearchParams }) {
 
     const params: ISearchParams = await searchParams;
+    reconstructSearchParamsFromUrl(params);
   //  const filter: IFilter = {};
   //  const sort: ISort = {};
-    //console.log(params)
+    console.log(params)
     const cards: ICard[] = await getAds(params)
 
     return (

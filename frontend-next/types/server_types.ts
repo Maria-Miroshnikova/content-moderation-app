@@ -1,5 +1,5 @@
-import { ECategory } from "./enums";
-import { ICard } from "./types";
+import { ECategory, ESortDirection, STATUS_META } from "./enums";
+import { FILTER_DEFAULT, ICard, LIMIT_DEFAULT, PAGE_DEFAULT, SORT_DEFAULT } from "./types";
 
 export interface ISearchParams {
     category?: string,
@@ -8,11 +8,42 @@ export interface ISearchParams {
     maxPrice?: number,
     categoryId?: ECategory,
     search?: string,
-    status?: string | string[],
+    status?: string[],
     sortBy?: string,
     sortOrder?: string,
     limit?: string
 }
+
+export const SEARCHPARAMS_DEFAILT: ISearchParams = {
+ //   category: FILTER_DEFAULT.category.toString(),
+    page: PAGE_DEFAULT.toString(),
+    minPrice: FILTER_DEFAULT.cost_min,
+    maxPrice: FILTER_DEFAULT.cost_max,
+ //   categoryId: FILTER_DEFAULT.category,
+ //   search: FILTER_DEFAULT.search,
+    status: Object.values(STATUS_META).map(meta => meta.server),
+ //   sortOrder: ESortDirection.DOWN,
+    limit: LIMIT_DEFAULT.toString()
+}
+
+/*
+default settings:
+limit
+: 
+"10"
+maxPrice
+: 
+"10000000"
+minPrice
+: 
+"0"
+page
+: 
+"1"
+status
+: 
+(4) ['pending', 'approved', 'rejected', 'draft']
+*/
 
 export interface IGetAdsAnswer {
     ads: IAd[],

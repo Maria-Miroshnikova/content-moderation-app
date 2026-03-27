@@ -1,5 +1,5 @@
 import { ECategory, ESort, ESortDirection, EStatus, SORT_META, STATUS_META } from "../types/enums";
-import { ISearchParams } from "../types/server_types"
+import { ISearchParams, SEARCHPARAMS_DEFAILT } from "../types/server_types"
 import { IFilter, ISort } from "../types/types";
 
 export function makeUrlWithParams(params: ISearchParams, url: string) {
@@ -18,6 +18,40 @@ export function makeUrlWithParams(params: ISearchParams, url: string) {
     const url_with_params = `${url}?${searchParams.toString()}`;
    // console.log(url_with_params)
     return url_with_params;
+}
+
+export function makeUrlWithParamsNoDefault(params: ISearchParams, url: string) {
+    const searchParams = new URLSearchParams()
+    Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+
+            if (Array.isArray(value)) {
+                //value.forEach(v => searchParams.append(key, String(v)))
+                const diff = SEARCHPARAMS_DEFAILT.status.filter(x => !value.includes(x));
+                diff.forEach(v => searchParams.append(key, String(v)));
+            } else {
+                if (key in SEARCHPARAMS_DEFAILT) {
+                    if (value != SEARCHPARAMS_DEFAILT[key])
+                        searchParams.append(key, String(value))
+                }
+                else
+                    searchParams.append(key, String(value))
+            }
+        }
+    })
+
+    //console.log(searchParams)
+    const url_with_params = `${url}?${searchParams.toString()}`;
+   // console.log(url_with_params)
+    return url_with_params;
+}
+
+export function reconstructSearchParamsFromUrl(params: ISearchParams) {
+    if (!params.status)
+        return;
+
+    const diff = SEARCHPARAMS_DEFAILT.status.filter(x => !params.status.includes(x));
+    params.status = diff;
 }
 
 function setFilterParams(params: ISearchParams, filter: IFilter) {
