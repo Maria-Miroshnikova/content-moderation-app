@@ -1,12 +1,12 @@
 "use client"
 
 import React, { FC } from "react";
-import { ISort, PAGE_DEFAULT } from "../types/types";
+import { ISort, PAGE_DEFAULT } from "../types/local_types";
 import { ESort, SORT_META } from "../types/enums";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ISearchParams } from "../types/server_types";
-import { parseSearchParams } from "../server/dto_to_ui_map";
-import { makeUrlWithParamsNoDefault, setSortParams } from "../server/makeUrlParams";
+import { parseSearchParams } from "../utils/mapServerResponseOrUrlParamsToLocalInterfaces";
+import { makeUrlWithParamsNoDefault, setSortParams } from "../utils/makeUrlParamsFromLocalInterfaces";
 
 interface CardsSortFormProps {
     sortSettings: ISort

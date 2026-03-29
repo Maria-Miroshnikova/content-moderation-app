@@ -3,12 +3,12 @@
 import React, { FC } from "react";
 
 import cl from "../styles/Card.module.css"
-import { FILTER_DEFAULT, ICategory, IFilter, PAGE_DEFAULT } from "../types/types";
+import { FILTER_DEFAULT, ICategory, IFilter, PAGE_DEFAULT } from "../types/local_types";
 import { CATEGORY_META } from "../types/enums";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ISearchParams } from "../types/server_types";
-import { parseSearchParams } from "../server/dto_to_ui_map";
-import { makeUrlWithParamsNoDefault, setFilterParams } from "../server/makeUrlParams";
+import { parseSearchParams } from "../utils/mapServerResponseOrUrlParamsToLocalInterfaces";
+import { makeUrlWithParamsNoDefault, setFilterParams } from "../utils/makeUrlParamsFromLocalInterfaces";
 
 interface CardsFilterFormProps {
     filter: IFilter;

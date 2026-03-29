@@ -66,3 +66,4 @@ export const STATES_DEFAULT: IStates = {
     page: PAGE_DEFAULT,
     limit: LIMIT_DEFAULT
 }
+

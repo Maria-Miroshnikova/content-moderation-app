@@ -1,6 +1,6 @@
 import { ECategory, ESort, ESortDirection, EStatus, SORT_META, STATUS_META } from "../types/enums";
 import { ISearchParams, SEARCHPARAMS_DEFAILT } from "../types/server_types"
-import { IFilter, ISort } from "../types/types";
+import { IFilter, ISort } from "../types/local_types";
 
 export function makeUrlWithParams(params: ISearchParams, url: string) {
     const searchParams = new URLSearchParams()

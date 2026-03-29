@@ -1,8 +1,8 @@
 import { ReadonlyURLSearchParams } from "next/navigation";
 import { ECategory, EPriority, ESort, ESortDirection, EStatus, PRIORITY_BY_SERVER_TITLE, SORT_META, STATUS_BY_SERVER_TITLE, STATUS_META } from "../types/enums";
 import { getDefaultSearchParams, IAd, ISearchParams, SEARCHPARAMS_DEFAILT } from "../types/server_types";
-import { FILTER_DEFAULT, ICard, IFilter, ISort, IStates, SORT_DEFAULT, STATES_DEFAULT } from "../types/types";
-import { reconstructSearchParamsFromUrl } from "./makeUrlParams";
+import { FILTER_DEFAULT, ICard, IFilter, ISort, IStates, SORT_DEFAULT, STATES_DEFAULT } from "../types/local_types";
+import { reconstructSearchParamsFromUrl } from "./makeUrlParamsFromLocalInterfaces";
 
 export function mapAdToCard(ad: IAd): ICard {
     return {

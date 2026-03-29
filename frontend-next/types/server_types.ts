@@ -1,5 +1,5 @@
 import { ECategory, ESortDirection, STATUS_META } from "./enums";
-import { FILTER_DEFAULT, ICard, LIMIT_DEFAULT, PAGE_DEFAULT, SORT_DEFAULT } from "./types";
+import { FILTER_DEFAULT, ICard, LIMIT_DEFAULT, PAGE_DEFAULT, SORT_DEFAULT } from "./local_types";
 
 export interface ISearchParams {
     category?: string,
@@ -76,27 +76,52 @@ export interface ISeller {
     registeredAt: string//'2025-07-02T20:19:01.953Z'
 }
 
+/*
+action
+: 
+"rejected"
+comment
+: 
+"Объявление не соответствует правилам платформы"
+id
+: 
+1
+moderatorId
+: 
+2
+moderatorName
+: 
+"Модератор 2"
+reason
+: 
+"Другое"
+timestamp
+: 
+"2026-02-13T15:18:47.817Z"
+*/
+
 export interface IModerationHistoryItem {
     id: number,
     moderatorId: number,
     moderatorName: string,
     action: string,
-    reason: string,
-    timestamp: string
+    reason?: string,
+    timestamp: string,
+    comment?: string
 }
 
 export interface IAd {
     category: string,
     categoryId: number,
-    characteristics: IAdCharacteristics
+    characteristics?: IAdCharacteristics
     createdAt: string // "2026-03-06T20:19:01.953Z"
     description: string,
     id: number, 
-    images: string[],
-    moderationHistory: IModerationHistoryItem[],
+    images?: string[],
+    moderationHistory?: IModerationHistoryItem[],
     price: number,
     priority: string,
-    seller: ISeller,
+    seller?: ISeller,
     status: string,
     title: string,
     updatedAt: string

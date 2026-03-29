@@ -1,7 +1,7 @@
 import React from "react";
 import Card from "./ui/Card";
 import cl from "../styles/CardsList.module.css"
-import { ICard } from "../types/types";
+import { ICard } from "../types/local_types";
 
 interface CardListProps {
     cards: ICard[],

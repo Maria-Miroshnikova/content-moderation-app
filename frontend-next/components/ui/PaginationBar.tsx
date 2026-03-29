@@ -3,9 +3,9 @@
 import React, { FC, useEffect, useMemo } from "react";
 import cl from "../../styles/PaginationBar.module.css"
 import { useRouter, useSearchParams } from "next/navigation";
-import { parseSearchParams } from "../../server/dto_to_ui_map";
+import { parseSearchParams } from "../../utils/mapServerResponseOrUrlParamsToLocalInterfaces";
 import { ISearchParams } from "../../types/server_types";
-import { makeUrlWithParamsNoDefault } from "../../server/makeUrlParams";
+import { makeUrlWithParamsNoDefault } from "../../utils/makeUrlParamsFromLocalInterfaces";
 
 interface PaginationBarProps {
     totalPages: number,

@@ -2,12 +2,11 @@ import cl from '../styles/PageAds.module.css';
 import CardsFilterForm from '../components/CardsFilterForm';
 import CardsSortForm from '../components/CardsSortForm';
 import CardList from '../components/CardList';
-import { ICard, IFilter, ISort, IStates } from '../types/types';
+import { ICard, IFilter, ISort, IStates } from '../types/local_types';
 import { EPriority, EStatus } from '../types/enums';
 import { IAdPagination, IAdResponse, IGetAdsAnswer, ISearchParams } from '../types/server_types';
-import { mapAdToCard, mapISearchParamsToStates } from '../server/dto_to_ui_map';
-import { makeUrlWithParams, reconstructSearchParamsFromUrl } from '../server/makeUrlParams';
-import PageAdsClient from '../components/PageAdsClient';
+import { mapAdToCard, mapISearchParamsToStates } from '../utils/mapServerResponseOrUrlParamsToLocalInterfaces';
+import { makeUrlWithParams, reconstructSearchParamsFromUrl } from '../utils/makeUrlParamsFromLocalInterfaces';
 import PaginationBar from '../components/ui/PaginationBar';
 
 async function AdsPage({ searchParams }: { searchParams: ISearchParams }) {
