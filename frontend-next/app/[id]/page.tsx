@@ -11,8 +11,10 @@ import { ICard } from '../../types/local_types';
 import { IAd, ISearchParams } from "../../types/server_types";
 import { makeUrlWithParams, reconstructSearchParamsFromUrl } from "../../utils/makeUrlParamsFromLocalInterfaces";
 import { mapAdToCard } from '../../utils/mapServerResponseOrUrlParamsToLocalInterfaces';
-import { EStatus, STATUS_META } from '../../types/enums';
+import { EReason, EStatus, REASONS_META, STATUS_BY_SERVER_TITLE, STATUS_META } from '../../types/enums';
 import { revalidatePath } from 'next/cache';
+import RejectPanel from '../../components/RejectPanel';
+import { redirect } from 'next/navigation';
 
 
 async function approvePost(data: FormData) {
@@ -26,9 +28,68 @@ async function approvePost(data: FormData) {
     });
 
     const resp = await response.json();
-    console.log(resp);
-    //return resp;
+    //console.log(resp);
     revalidatePath(`/${cardId}`)
+    revalidatePath('/');
+}
+
+
+async function rejectPost(data: FormData) {
+    'use server';
+
+    const cardId: string = data.get('cardId') as string;
+    const reason: EReason = Number(data.get('reason') as string);
+    const reasotText: string = REASONS_META[reason];
+    const comment: string = data.get('comment') as string;
+
+    console.log(cardId, reason, comment);
+
+    const response = await fetch(`http://localhost:3001/api/v1/ads/${cardId}/reject?id=${cardId}`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            reason: reasotText,
+            comment: comment
+        })
+    });
+
+    const resp = await response.json();
+    //console.log("ответ сервера reject: ", resp);
+
+    revalidatePath('/');
+    revalidatePath(`/${cardId}`);
+    redirect(`/${cardId}`);
+}
+
+async function draftPost(data: FormData) {
+    'use server';
+
+    const cardId: string = data.get('cardId') as string;
+    const reason: EReason = Number(data.get('reason') as string);
+    const reasotText: string = REASONS_META[reason];
+    const comment: string = data.get('comment') as string;
+
+    console.log(cardId, reason, comment);
+
+    const response = await fetch(`http://localhost:3001/api/v1/ads/${cardId}/request-changes?id=${cardId}`, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            reason: reasotText,
+            comment: comment
+        })
+    });
+
+    const resp = await response.json();
+    //console.log("ответ сервера reject: ", resp);
+
+    revalidatePath('/');
+    revalidatePath(`/${cardId}`);
+    redirect(`/${cardId}`);
 }
 
 interface PageProps {
@@ -50,11 +111,11 @@ async function CurrentAdPage({ params, searchParams }: PageProps) {
     const card: ICard = mapAdToCard(adDetails)
     console.log(adDetails)
 
-    //<Link href={`/${id}modalView=true&action=${STATUS_META[EStatus.DECLINED].server}`}>
     // <RejectPanel actionType={actionType} actionStatus={actionStatus} setAtionStatus={setAtionStatus} id={params.id} setVisibility={setModalVisibility}/>
     return (
         <div className={cl.AdsDetailsPage_layout}>
             <ModalView isVisible={search.modalView ?? false}>
+                <RejectPanel actionType={STATUS_BY_SERVER_TITLE[search.action]} id={id} isVisible={search.modalView ?? false} rejectPost={rejectPost} draftPost={draftPost}/>
             </ModalView>
 
             <div className={cl.gallery_and_history_layout}>

@@ -10,6 +10,7 @@ interface CardListProps {
 }
 
 const CardList = ({cards, page, limit}: CardListProps) => {
+    //console.log(cards)
     return(
         <div className={cl.cards_list}>
             {(cards.length === 0) && <p className="card_list_notfound">Объявления не найдены</p>}

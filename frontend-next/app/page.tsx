@@ -46,7 +46,7 @@ async function getAds(params: ISearchParams) {
     if (!response.ok) throw new Error("Unable to fetch ads")
 
     const response_json: IGetAdsAnswer = await response.json()
-    //console.log(response_json)
+    console.log(response_json)
     const cards: ICard[] = response_json.ads.map(mapAdToCard)
     const pagination: IAdPagination = response_json.pagination;
     const adsResponse: IAdResponse = {
