@@ -1,36 +1,83 @@
 
 
 
+import Link from 'next/link';
 import DescriptionPanel from '../../components/DescriptionPanel';
 import GalleryPanel from '../../components/GalleryPanel';
 import ModerationHistoryPanel from '../../components/ModerationHistoryPanel';
+import ModalView from '../../components/ui/ModalView';
 import cl from '../../styles/PageCurrentAd.module.css';
 import { ICard } from '../../types/local_types';
 import { IAd, ISearchParams } from "../../types/server_types";
 import { makeUrlWithParams, reconstructSearchParamsFromUrl } from "../../utils/makeUrlParamsFromLocalInterfaces";
 import { mapAdToCard } from '../../utils/mapServerResponseOrUrlParamsToLocalInterfaces';
+import { EStatus, STATUS_META } from '../../types/enums';
+import { revalidatePath } from 'next/cache';
 
-interface PageProps {
-    id: string
+
+async function approvePost(data: FormData) {
+    'use server';
+
+    const { cardId } = Object.fromEntries(data);
+
+    const response = await fetch(`http://localhost:3001/api/v1/ads/${cardId}/approve?id=${cardId}`, {
+        method: "POST"
+
+    });
+
+    const resp = await response.json();
+    console.log(resp);
+    //return resp;
+    revalidatePath(`/${cardId}`)
 }
 
-async function CurrentAdPage({params}: {params: PageProps}) {
-    const {id} = await params;
+interface PageProps {
+    params: {
+        id: string
+    }
+    searchParams: {
+        modalView?: boolean,
+        action?: string
+    }
+}
+
+async function CurrentAdPage({ params, searchParams }: PageProps) {
+    const { id } = await params;
+    const search = await searchParams;
     //console.log(id)
+    console.log(id, search)
     const adDetails: IAd = await getAdById(id)
     const card: ICard = mapAdToCard(adDetails)
     console.log(adDetails)
 
+    //<Link href={`/${id}modalView=true&action=${STATUS_META[EStatus.DECLINED].server}`}>
+    // <RejectPanel actionType={actionType} actionStatus={actionStatus} setAtionStatus={setAtionStatus} id={params.id} setVisibility={setModalVisibility}/>
     return (
         <div className={cl.AdsDetailsPage_layout}>
+            <ModalView isVisible={search.modalView ?? false}>
+            </ModalView>
+
             <div className={cl.gallery_and_history_layout}>
-                <GalleryPanel images={adDetails.images}/>
-                <ModerationHistoryPanel history={adDetails.moderationHistory}/>
+                <GalleryPanel images={adDetails.images} />
+                <ModerationHistoryPanel history={adDetails.moderationHistory} />
             </div>
             <div className={cl.description}>
                 <DescriptionPanel data={adDetails} />
             </div>
-            
+            <div className={cl.buttons_panel}>
+                <form>
+                    <input type="hidden" name="cardId" value={id} />
+                    <button formAction={approvePost}>
+                        Одобрить
+                    </button>
+                </form>
+                <Link href={`/${id}?modalView=true&action=${STATUS_META[EStatus.DECLINED].server}`}>
+                    <button>Отклонить</button>
+                </Link>
+                <Link href={`/${id}?modalView=true&action=${STATUS_META[EStatus.DRAFT].server}`}>
+                    <button>Доработка</button>
+                </Link>
+            </div>
         </div>
     );
 }
@@ -51,6 +98,7 @@ async function getAdById(id: string) {
 
     const response_json: IAd = await response.json()
     console.log(response_json)
+
     return response_json;
 }
 
