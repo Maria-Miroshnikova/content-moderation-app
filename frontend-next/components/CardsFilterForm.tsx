@@ -1,6 +1,6 @@
 "use client"
 
-import React, { FC } from "react";
+import React, { FC, useEffect, useState } from "react";
 
 import cl from "../styles/Card.module.css"
 import { FILTER_DEFAULT, ICategory, IFilter, PAGE_DEFAULT } from "../types/local_types";
@@ -16,8 +16,29 @@ interface CardsFilterFormProps {
 
 const CardsFilterForm: FC<CardsFilterFormProps> = ({ filter }) => {
 
+    console.log("filter on start: ", filter)
     const router = useRouter()
     const searchParams = useSearchParams()
+
+    // параметры, поиск которых нужно вызывать отложенно
+    const [localSearch, setLocalSearch] = useState<string>(filter.search);
+    const [localCostMin, setLocalCostMin] = useState<number>(filter.cost_min);
+    const [localCostMax, setLocalCostMax] = useState<number>(filter.cost_max);
+
+    // TODO: заменить отложенный поиск на поиск по кнопке?
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            handleFilterChange({ ...filter, search: localSearch, cost_max: localCostMax, cost_min: localCostMin });
+        }, 300);
+
+        return () => clearTimeout(timeout);
+    }, [localSearch, localCostMax, localCostMin]);
+
+    useEffect(() => {
+        setLocalSearch(filter.search);
+        setLocalCostMin(filter.cost_min);
+        setLocalCostMax(filter.cost_max);
+    }, [filter.search, filter.cost_min, filter.cost_max]);
 
     const resetFilter = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault()
@@ -25,6 +46,7 @@ const CardsFilterForm: FC<CardsFilterFormProps> = ({ filter }) => {
     }
 
     function handleFilterChange(filter: IFilter) {
+        console.log("filter when change: ", filter)
         let params: ISearchParams = parseSearchParams(searchParams);
         setFilterParams(params, filter);
         params.page = PAGE_DEFAULT.toString();
@@ -74,19 +96,19 @@ const CardsFilterForm: FC<CardsFilterFormProps> = ({ filter }) => {
             <div>
                 <input type='number'
                     placeholder='oт'
-                    value={filter.cost_min}
-                    onChange={e => handleFilterChange({ ...filter, cost_min: Number(e.target.value) })}
+                    value={localCostMin}
+                    onChange={e => setLocalCostMin(Number(e.target.value))}
                 />
                 <input type='number'
                     placeholder='до'
-                    value={filter.cost_max}
-                    onChange={e => handleFilterChange({ ...filter, cost_max: Number(e.target.value) })}
+                    value={localCostMax}
+                    onChange={e => setLocalCostMax(Number(e.target.value))}
                 />
             </div>
 
             <input placeholder='Искать в названии...'
-                value={filter.search}
-                onChange={e => handleFilterChange({ ...filter, search: e.target.value })}
+                value={localSearch}
+                onChange={e => setLocalSearch(e.target.value)}
                 type='text'
             />
 

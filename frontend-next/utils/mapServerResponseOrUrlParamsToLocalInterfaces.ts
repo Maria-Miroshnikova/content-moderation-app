@@ -58,6 +58,7 @@ export function mapISearchParamsToStates(params: ISearchParams) {
 export function parseSearchParams(sp: ReadonlyURLSearchParams): ISearchParams {
     const params = getDefaultSearchParams();
 
+    //console.log("parsing url: ", params)
     if (sp.has('page')) {
         params.page = sp.get('page')!
     }
@@ -81,6 +82,7 @@ export function parseSearchParams(sp: ReadonlyURLSearchParams): ISearchParams {
     if (sp.has('search')) {
         params.search = sp.get('search')!
     }
+    //console.log("result url: ", params)
 
     const status = sp.getAll('status')
     if (status.length > 0) {

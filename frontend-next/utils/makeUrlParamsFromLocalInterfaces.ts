@@ -16,7 +16,7 @@ export function makeUrlWithParams(params: ISearchParams, url: string) {
 
     //console.log(searchParams)
     const url_with_params = `${url}?${searchParams.toString()}`;
-   // console.log(url_with_params)
+    // console.log(url_with_params)
     return url_with_params;
 }
 
@@ -42,7 +42,7 @@ export function makeUrlWithParamsNoDefault(params: ISearchParams, url: string) {
 
     //console.log(searchParams)
     const url_with_params = `${url}?${searchParams.toString()}`;
-   // console.log(url_with_params)
+    //console.log(url_with_params)
     return url_with_params;
 }
 
@@ -60,7 +60,7 @@ export function setFilterParams(params: ISearchParams, filter: IFilter) {
     else
         delete params.categoryId;
 
-    if (filter.search != "")
+    //if (filter.search != "")
         params.search = filter.search
 
     const statuses: string[] = []
@@ -99,7 +99,7 @@ export function setSortParams(params: ISearchParams, sort: ISort) {
     else if (sort.type === ESort.PRIORITY) {
         params.sortBy = SORT_META[sort.type].server;
         delete params.sortOrder;
-       // params.sortOrder = ESortDirection.DOWN
+        // params.sortOrder = ESortDirection.DOWN
     }
     //console.log("params after setSort: ", params)
 }

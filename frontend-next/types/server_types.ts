@@ -20,7 +20,7 @@ export const SEARCHPARAMS_DEFAILT: ISearchParams = {
     minPrice: FILTER_DEFAULT.cost_min,
     maxPrice: FILTER_DEFAULT.cost_max,
  //   categoryId: FILTER_DEFAULT.category,
- //   search: FILTER_DEFAULT.search,
+    search: FILTER_DEFAULT.search,
     status: Object.values(STATUS_META).map(meta => meta.server),
  //   sortOrder: ESortDirection.DOWN,
     limit: LIMIT_DEFAULT.toString()

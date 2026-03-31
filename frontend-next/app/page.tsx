@@ -24,7 +24,7 @@ async function AdsPage({ searchParams }: { searchParams: ISearchParams }) {
                 <CardsFilterForm filter={states.filter} />
                 <CardsSortForm sortSettings={states.sort} />
             </div>
-            <CardList cards={adsResponse.cards} page={states.page} limit={states.limit} />
+            <CardList cards={adsResponse.cards} page={states.page} limit={states.limit} totalItems={adsResponse.pagination.totalItems} params={params}/>
             <PaginationBar totalPages={adsResponse.pagination.totalPages} totalItems={adsResponse.pagination.totalItems} page={states.page} />
         </div>
     );
@@ -46,7 +46,7 @@ async function getAds(params: ISearchParams) {
     if (!response.ok) throw new Error("Unable to fetch ads")
 
     const response_json: IGetAdsAnswer = await response.json()
-    console.log(response_json)
+   // console.log(response_json)
     const cards: ICard[] = response_json.ads.map(mapAdToCard)
     const pagination: IAdPagination = response_json.pagination;
     const adsResponse: IAdResponse = {

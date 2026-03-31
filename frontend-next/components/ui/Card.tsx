@@ -1,17 +1,21 @@
 import React, { useContext } from "react";
 import cl from "../../styles/Card.module.css"
-import { ICard } from "../../types/local_types";
+import { ICard, IFilter, ISort } from "../../types/local_types";
 import { PRIORITY_META, STATUS_META } from "../../types/enums";
 import Link from "next/link";
+import { ISearchParams } from "../../types/server_types";
+import { makeUrlWithParamsNoDefault } from "../../utils/makeUrlParamsFromLocalInterfaces";
 
 
 
 interface CardProps {
     card: ICard,
-    id: number // это не id карточки
+    id: number // это не id карточки, это ее номер в общей очереди с текущими фильтрами и сортировкой
+    totalItems: number // всего карточек в очереди с текущими фильтрами и сортировкой,
+    params: ISearchParams
 }
 
-const Card = ({ card, id }: CardProps) => {
+const Card = ({ card, id, totalItems, params }: CardProps) => {
 
     //const { idPage, setIdPage } = useContext(FilterAndSortContext);
 
@@ -46,8 +50,10 @@ const Card = ({ card, id }: CardProps) => {
                 <p>{PRIORITY_META[card.priority].title}</p>
                 <Link
                     href={{
-                        pathname: `/${card.id}`,
-                        //query: { filter: filter, page: 2 }
+                        pathname: makeUrlWithParamsNoDefault(params, `/${card.id}`),
+                        query: {
+                            totalItems: totalItems,
+                            currentItem: id, }
                     }}
                 >
                     <button
