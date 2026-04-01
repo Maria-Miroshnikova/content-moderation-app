@@ -8,13 +8,13 @@ import ModerationHistoryPanel from '../../components/ModerationHistoryPanel';
 import ModalView from '../../components/ui/ModalView';
 import cl from '../../styles/PageCurrentAd.module.css';
 import { ICard } from '../../types/local_types';
-import { IAd, ICurrentPageParams, ISearchParams } from "../../types/server_types";
+import { IAd, IAdResponse, ICurrentPageParams, IGetAdsAnswer, ISearchParams } from "../../types/server_types";
 import { mapAdToCard, parseCurrentPageParams, parseSearchParams } from '../../utils/mapServerResponseOrUrlParamsToLocalInterfaces';
 import { EReason, EStatus, REASONS_META, STATUS_BY_SERVER_TITLE, STATUS_META } from '../../types/enums';
 import { revalidatePath } from 'next/cache';
 import RejectPanel from '../../components/RejectPanel';
 import { redirect } from 'next/navigation';
-import { getCurrentCardUrl, makeUrlCurrentPageParams, makeUrlFromParamsCombo, makeUrlSearchParamsNoDefault, reconstructSearchParamsFromUrl } from '../../utils/makeUrlParamsFromLocalInterfaces';
+import { getCurrentCardUrl, makeUrlCurrentPageParams, makeUrlFromParamsCombo, makeUrlSearchParamsForServer, makeUrlSearchParamsNoDefault, reconstructSearchParamsFromUrl } from '../../utils/makeUrlParamsFromLocalInterfaces';
 
 
 async function approvePost(data: FormData) {
@@ -108,10 +108,10 @@ interface PageProps {
 async function CurrentAdPage({ params, searchParams }: PageProps) {
     const { id } = await params;
     const search = await searchParams;
-    console.log("current page PARAMS: ", id, search)
+    // console.log("current page PARAMS: ", id, search)
 
-    const adDetails: IAd = await getAdById(id)
-    const card: ICard = mapAdToCard(adDetails)
+    const adDetails: IAd = await getAdByIdAndFilter(search, id) // getAdById(id)
+    //const card: ICard = mapAdToCard(adDetails)
 
     function getRejectionPanelUrl(action: EStatus) {
         let newParams: ICurrentPageParamsFull = JSON.parse(JSON.stringify(search));
@@ -120,6 +120,18 @@ async function CurrentAdPage({ params, searchParams }: PageProps) {
         newParams.modalView = true;
         let url = getCurrentCardUrl(newParams, id);
         return url;
+    }
+
+    function getAllAdsUrl() {
+        let newParams: ICurrentPageParamsFull = JSON.parse(JSON.stringify(search));
+        delete newParams.action;
+        delete newParams.listId;
+        delete newParams.modalView;
+        delete newParams.totalItems;
+        reconstructSearchParamsFromUrl(newParams);
+        const url_params: URLSearchParams = makeUrlSearchParamsNoDefault(newParams);
+        const url_with_params: string = makeUrlFromParamsCombo(url_params.toString(), '/')
+        return url_with_params;
     }
 
     return (
@@ -150,6 +162,9 @@ async function CurrentAdPage({ params, searchParams }: PageProps) {
                     <button>Доработка</button>
                 </Link>
             </div>
+            <div className={cl.navigation_panel}>
+                <Link href={getAllAdsUrl()}>К списку</Link>
+            </div>
         </div>
     );
 
@@ -173,6 +188,33 @@ async function getAdById(id: string) {
     //console.log(response_json)
 
     return response_json;
+}
+
+async function getAdByIdAndFilter(params: ICurrentPageParamsFull, id: string) {
+    const url = `http://localhost:3001/api/v1/ads`
+
+    let newParams: ISearchParams = JSON.parse(JSON.stringify(params));
+    newParams.limit = "1";
+    newParams.page = (params.listId).toString();
+    reconstructSearchParamsFromUrl(newParams)
+    //console.log("new params: ", newParams)
+    const url_params: URLSearchParams = makeUrlSearchParamsForServer(newParams)
+    const url_with_params: string = makeUrlFromParamsCombo(url_params.toString(), url)
+    //console.log("server url: ", url_with_params)
+
+    const response = await fetch(url_with_params, {
+        next: {
+            revalidate: 60
+        },
+
+    })
+
+    if (!response.ok) throw new Error("Unable to fetch ads")
+
+    const response_json: IGetAdsAnswer = await response.json()
+    //console.log("resp from server: ", response_json.ads[0])
+
+    return response_json.ads[0];
 }
 
 /*

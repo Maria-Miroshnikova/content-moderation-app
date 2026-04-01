@@ -38,6 +38,7 @@ async function getAds(params: ISearchParams) {
     const url = `http://localhost:3001/api/v1/ads`
     const url_params: URLSearchParams = makeUrlSearchParamsForServer(params)
     const url_with_params: string = makeUrlFromParamsCombo(url_params.toString(), url)
+    //console.log("server url: ", url_with_params)
 
     const response = await fetch(url_with_params, {
         next: {

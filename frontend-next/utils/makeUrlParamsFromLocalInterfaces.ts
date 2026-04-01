@@ -3,7 +3,7 @@ import { ICurrentPageParams, ISearchParams, SEARCHPARAMS_DEFAILT } from "../type
 import { IFilter, ISort } from "../types/local_types";
 import { ICurrentPageParamsFull } from "../app/[id]/page";
 
-export function makeUrlSearchParamsForServer(params: ISearchParams) {
+/*export function makeUrlSearchParamsForServer(params: ISearchParams) {
     const searchParams = new URLSearchParams()
     Object.entries(params).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
@@ -11,6 +11,20 @@ export function makeUrlSearchParamsForServer(params: ISearchParams) {
                 value.forEach(v => searchParams.append(key, String(v)))
             } else {
                 searchParams.append(key, String(value))
+            }
+        }
+    })
+    return searchParams
+}*/
+
+export function makeUrlSearchParamsForServer(params: ISearchParams) {
+    const searchParams = new URLSearchParams()
+    keys.forEach((key) => {
+        if (params[key] !== undefined && params[key] !== null) {
+            if (Array.isArray(params[key])) {
+                params[key].forEach(v => searchParams.append(key, String(v)))
+            } else {
+                searchParams.append(key, String(params[key]))
             }
         }
     })
@@ -68,11 +82,7 @@ export function makeUrlSearchParamsNoDefault___old(params: ISearchParams) {
     return searchParams;
 }*/
 
-// эта функция ожидает, что status в params сейчас такой же как в фильтре, а не сокращенный
-export function makeUrlSearchParamsNoDefault(params: ISearchParams) {
-    const searchParams = new URLSearchParams()
-
-    const keys: string[] = ['page',
+const keys: string[] = ['page',
         'limit',
         'search',
         'status',
@@ -81,6 +91,10 @@ export function makeUrlSearchParamsNoDefault(params: ISearchParams) {
         'categoryId',
         'maxPrice',
         'minPrice']
+
+// эта функция ожидает, что status в params сейчас такой же как в фильтре, а не сокращенный
+export function makeUrlSearchParamsNoDefault(params: ISearchParams) {
+    const searchParams = new URLSearchParams()
 
     keys.forEach((key) => {
         if (params[key] !== undefined && params[key] !== null) {
@@ -197,7 +211,7 @@ export function makeISearchParamsFromStates(filter: IFilter, sort: ISort, page: 
 }
 
 export function getCurrentCardUrl(search: ICurrentPageParamsFull, card_id: number | string) {
-    console.log("params before parsing: ", search)
+    //console.log("params before parsing: ", search)
     const url_params_currend_ad: URLSearchParams = makeUrlCurrentPageParams(search);
     const url_params_search: URLSearchParams = makeUrlSearchParamsNoDefault(search);
     // console.log("card to current - params SEARCH for url: ", url_params_search.toString(), "CURR for url: ", url_params_currend_ad.toString())
