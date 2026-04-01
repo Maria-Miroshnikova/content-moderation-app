@@ -1,0 +1,29 @@
+.card {
+    border: 1px solid black;
+    border-radius: 5px;
+
+    display: flex;
+
+    font-size: 1rem;
+    padding: 10px;
+}
+
+.description {
+    flex-grow: 1;
+}
+
+.panel_btn {
+    align-self: end;
+
+    background-color: teal;
+    font-size: 1rem;
+}
+
+/*
+.cardImg {
+    border: 1px solid black;
+    box-shadow: 5px 5px 5px rgba(0,0,0,0.1);
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+}*/

@@ -1,0 +1,25 @@
+.pagination_layout{
+    display: flex;
+    flex-direction: column;
+}
+
+.cards_count_p {
+    text-align: center;
+}
+
+.paginationBar {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+}
+
+.pagination_btn {
+    border: 1px solid black;
+    padding: 5px;
+    min-width: 32px;
+    background-color: white;
+}
+
+.pagination_btn_current {
+    background-color: bisque;
+}
