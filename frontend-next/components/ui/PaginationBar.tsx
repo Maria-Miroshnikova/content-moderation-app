@@ -5,7 +5,7 @@ import cl from "../../styles/PaginationBar.module.css"
 import { useRouter, useSearchParams } from "next/navigation";
 import { parseSearchParams } from "../../utils/mapServerResponseOrUrlParamsToLocalInterfaces";
 import { ISearchParams } from "../../types/server_types";
-import { makeUrlWithParamsNoDefault } from "../../utils/makeUrlParamsFromLocalInterfaces";
+import { makeUrlFromParamsCombo, makeUrlSearchParamsNoDefault } from "../../utils/makeUrlParamsFromLocalInterfaces";
 
 interface PaginationBarProps {
     totalPages: number,
@@ -17,7 +17,7 @@ const PaginationBar = ({ totalPages, totalItems, page }: PaginationBarProps) => 
 
     const router = useRouter()
     const searchParams = useSearchParams()
-    
+
 
     const pageArray = useMemo(() => {
         //console.log("create array for totalPages: ", totalPages)
@@ -32,7 +32,8 @@ const PaginationBar = ({ totalPages, totalItems, page }: PaginationBarProps) => 
     function handlePageChange(i: number) {
         let params: ISearchParams = parseSearchParams(searchParams);
         params.page = i.toString();
-        let url_with_params = makeUrlWithParamsNoDefault(params, '/')
+        let url_params: URLSearchParams = makeUrlSearchParamsNoDefault(params)
+        let url_with_params = makeUrlFromParamsCombo(url_params.toString(), '/')
         router.replace(url_with_params);
     }
 

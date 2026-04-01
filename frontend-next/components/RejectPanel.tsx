@@ -4,8 +4,11 @@ import { useEffect, useState } from "react"
 import cl from "../styles/RejectPanel.module.css"
 import { EReason, EStatus, REASONS_META, STATUS_META } from "../types/enums"
 import { useRouter, useSearchParams } from "next/navigation"
+import { ICurrentPageParamsFull } from "../app/[id]/page"
+import { getCurrentCardUrl } from "../utils/makeUrlParamsFromLocalInterfaces"
 
 interface RejectPanelProps {
+    params: ICurrentPageParamsFull,
     actionType: EStatus,
     id: string,
     isVisible: boolean,
@@ -13,7 +16,7 @@ interface RejectPanelProps {
     draftPost: (data: FormData) => Promise<void>
 }
 
-const RejectPanel = ({ actionType, id, isVisible, rejectPost, draftPost }: RejectPanelProps) => {
+const RejectPanel = ({params, actionType, id, isVisible, rejectPost, draftPost }: RejectPanelProps) => {
 
     const [reason, setReason] = useState(EReason.OTHER)
     const [comment, setComment] = useState("")
@@ -21,9 +24,19 @@ const RejectPanel = ({ actionType, id, isVisible, rejectPost, draftPost }: Rejec
     if (!isVisible)
         return null
 
+    function handleCloseModalViewWhenPostAndGetRedirectUrl() {
+        let newParams: ICurrentPageParamsFull = JSON.parse(JSON.stringify(params));
+        //console.log("json: ", newParams)
+        delete newParams.action;
+        delete newParams.modalView;
+        let url = getCurrentCardUrl(newParams, id);
+        return url;
+    }
+
     return (
         <form className={cl.container} action={(actionType == EStatus.DECLINED) ? rejectPost : draftPost}>
             <input type="hidden" name="cardId" value={id} />
+            <input type="hidden" name="url" value={handleCloseModalViewWhenPostAndGetRedirectUrl()} />
             <p><b>{STATUS_META[actionType].movalView}</b></p>
             <div className={cl.inner_panel}>
                 <p>Причина:</p>

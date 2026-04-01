@@ -1,4 +1,4 @@
-
+'use server';
 
 
 import Link from 'next/link';
@@ -8,19 +8,20 @@ import ModerationHistoryPanel from '../../components/ModerationHistoryPanel';
 import ModalView from '../../components/ui/ModalView';
 import cl from '../../styles/PageCurrentAd.module.css';
 import { ICard } from '../../types/local_types';
-import { IAd, ISearchParams } from "../../types/server_types";
-import { makeUrlWithParams, reconstructSearchParamsFromUrl } from "../../utils/makeUrlParamsFromLocalInterfaces";
-import { mapAdToCard } from '../../utils/mapServerResponseOrUrlParamsToLocalInterfaces';
+import { IAd, ICurrentPageParams, ISearchParams } from "../../types/server_types";
+import { mapAdToCard, parseCurrentPageParams, parseSearchParams } from '../../utils/mapServerResponseOrUrlParamsToLocalInterfaces';
 import { EReason, EStatus, REASONS_META, STATUS_BY_SERVER_TITLE, STATUS_META } from '../../types/enums';
 import { revalidatePath } from 'next/cache';
 import RejectPanel from '../../components/RejectPanel';
 import { redirect } from 'next/navigation';
+import { getCurrentCardUrl, makeUrlCurrentPageParams, makeUrlFromParamsCombo, makeUrlSearchParamsNoDefault, reconstructSearchParamsFromUrl } from '../../utils/makeUrlParamsFromLocalInterfaces';
 
 
 async function approvePost(data: FormData) {
     'use server';
 
     const { cardId } = Object.fromEntries(data);
+    //const url_redirect: string = data.get('url') as string;
 
     const response = await fetch(`http://localhost:3001/api/v1/ads/${cardId}/approve?id=${cardId}`, {
         method: "POST"
@@ -41,6 +42,7 @@ async function rejectPost(data: FormData) {
     const reason: EReason = Number(data.get('reason') as string);
     const reasotText: string = REASONS_META[reason];
     const comment: string = data.get('comment') as string;
+    const url_redirect: string = data.get('url') as string;
 
     console.log(cardId, reason, comment);
 
@@ -60,7 +62,7 @@ async function rejectPost(data: FormData) {
 
     revalidatePath('/');
     revalidatePath(`/${cardId}`);
-    redirect(`/${cardId}`);
+    redirect(url_redirect);
 }
 
 async function draftPost(data: FormData) {
@@ -70,6 +72,8 @@ async function draftPost(data: FormData) {
     const reason: EReason = Number(data.get('reason') as string);
     const reasotText: string = REASONS_META[reason];
     const comment: string = data.get('comment') as string;
+
+    const url_redirect: string = data.get('url') as string;
 
     console.log(cardId, reason, comment);
 
@@ -89,33 +93,39 @@ async function draftPost(data: FormData) {
 
     revalidatePath('/');
     revalidatePath(`/${cardId}`);
-    redirect(`/${cardId}`);
+    redirect(url_redirect);
 }
+
+export type ICurrentPageParamsFull = ICurrentPageParams & ISearchParams;
 
 interface PageProps {
     params: {
         id: string
     }
-    searchParams: {
-        modalView?: boolean,
-        action?: string
-    }
+    searchParams: ICurrentPageParamsFull
 }
 
 async function CurrentAdPage({ params, searchParams }: PageProps) {
     const { id } = await params;
     const search = await searchParams;
-    //console.log(id)
-    console.log(id, search)
+    console.log("current page PARAMS: ", id, search)
+
     const adDetails: IAd = await getAdById(id)
     const card: ICard = mapAdToCard(adDetails)
-    console.log(adDetails)
 
-    // <RejectPanel actionType={actionType} actionStatus={actionStatus} setAtionStatus={setAtionStatus} id={params.id} setVisibility={setModalVisibility}/>
+    function getRejectionPanelUrl(action: EStatus) {
+        let newParams: ICurrentPageParamsFull = JSON.parse(JSON.stringify(search));
+        //console.log("json: ", newParams)
+        newParams.action = STATUS_META[action].server;
+        newParams.modalView = true;
+        let url = getCurrentCardUrl(newParams, id);
+        return url;
+    }
+
     return (
         <div className={cl.AdsDetailsPage_layout}>
             <ModalView isVisible={search.modalView ?? false}>
-                <RejectPanel actionType={STATUS_BY_SERVER_TITLE[search.action]} id={id} isVisible={search.modalView ?? false} rejectPost={rejectPost} draftPost={draftPost}/>
+                <RejectPanel params={search} actionType={STATUS_BY_SERVER_TITLE[search.action]} id={id} isVisible={search.modalView ?? false} rejectPost={rejectPost} draftPost={draftPost} />
             </ModalView>
 
             <div className={cl.gallery_and_history_layout}>
@@ -128,19 +138,21 @@ async function CurrentAdPage({ params, searchParams }: PageProps) {
             <div className={cl.buttons_panel}>
                 <form>
                     <input type="hidden" name="cardId" value={id} />
+                    <input type="hidden" name="url" value={getCurrentCardUrl(search, id)} />
                     <button formAction={approvePost}>
                         Одобрить
                     </button>
                 </form>
-                <Link href={`/${id}?modalView=true&action=${STATUS_META[EStatus.DECLINED].server}`}>
+                <Link href={getRejectionPanelUrl(EStatus.DECLINED)}>
                     <button>Отклонить</button>
                 </Link>
-                <Link href={`/${id}?modalView=true&action=${STATUS_META[EStatus.DRAFT].server}`}>
+                <Link href={getRejectionPanelUrl(EStatus.DRAFT)}>
                     <button>Доработка</button>
                 </Link>
             </div>
         </div>
     );
+
 }
 
 export default CurrentAdPage;
@@ -158,7 +170,7 @@ async function getAdById(id: string) {
     if (!response.ok) throw new Error("Unable to fetch ads")
 
     const response_json: IAd = await response.json()
-    console.log(response_json)
+    //console.log(response_json)
 
     return response_json;
 }

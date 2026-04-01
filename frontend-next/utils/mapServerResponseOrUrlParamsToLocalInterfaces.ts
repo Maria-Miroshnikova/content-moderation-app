@@ -1,6 +1,6 @@
 import { ReadonlyURLSearchParams } from "next/navigation";
 import { ECategory, EPriority, ESort, ESortDirection, EStatus, PRIORITY_BY_SERVER_TITLE, SORT_META, STATUS_BY_SERVER_TITLE, STATUS_META } from "../types/enums";
-import { getDefaultSearchParams, IAd, ISearchParams, SEARCHPARAMS_DEFAILT } from "../types/server_types";
+import { getDefaultSearchParams, IAd, ICurrentPageParams, ISearchParams, SEARCHPARAMS_DEFAILT } from "../types/server_types";
 import { FILTER_DEFAULT, ICard, IFilter, ISort, IStates, SORT_DEFAULT, STATES_DEFAULT } from "../types/local_types";
 import { reconstructSearchParamsFromUrl } from "./makeUrlParamsFromLocalInterfaces";
 
@@ -55,7 +55,7 @@ export function mapISearchParamsToStates(params: ISearchParams) {
     return states;
 }
 
-export function parseSearchParams(sp: ReadonlyURLSearchParams): ISearchParams {
+export function parseSearchParams(sp: ReadonlyURLSearchParams | URLSearchParams): ISearchParams {
     const params = getDefaultSearchParams();
 
     //console.log("parsing url: ", params)
@@ -100,5 +100,27 @@ export function parseSearchParams(sp: ReadonlyURLSearchParams): ISearchParams {
 
     //console.log("parsed url: ", params);
 
+    return params
+}
+
+export function parseCurrentPageParams(sp: ReadonlyURLSearchParams | URLSearchParams): ICurrentPageParams {
+    const params = getDefaultSearchParams();
+
+    //console.log("parsing url: ", params)
+    if (sp.has('modalView')) {
+        params.page = sp.get('modalView')!
+    }
+
+    if (sp.has('totalItems')) {
+        params.limit = sp.get('totalItems')!
+    }
+
+    if (sp.has('action')) {
+        params.minPrice = Number(sp.get('action'))
+    }
+
+    if (sp.has('listId')) {
+        params.maxPrice = Number(sp.get('listId'))
+    }
     return params
 }

@@ -6,7 +6,7 @@ import { ESort, SORT_META } from "../types/enums";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ISearchParams } from "../types/server_types";
 import { parseSearchParams } from "../utils/mapServerResponseOrUrlParamsToLocalInterfaces";
-import { makeUrlWithParamsNoDefault, setSortParams } from "../utils/makeUrlParamsFromLocalInterfaces";
+import { makeUrlFromParamsCombo, makeUrlSearchParamsNoDefault, setSortParams } from "../utils/makeUrlParamsFromLocalInterfaces";
 
 interface CardsSortFormProps {
     sortSettings: ISort
@@ -21,7 +21,8 @@ const CardsSortForm: FC<CardsSortFormProps> = ({ sortSettings }) => {
         let params: ISearchParams = parseSearchParams(searchParams);
         setSortParams(params, sort);
         params.page = PAGE_DEFAULT.toString();
-        let url_with_params = makeUrlWithParamsNoDefault(params, '/')
+        let url_params: URLSearchParams = makeUrlSearchParamsNoDefault(params)
+        let url_with_params = makeUrlFromParamsCombo(url_params.toString(), '/')
         router.replace(url_with_params);
     }
 

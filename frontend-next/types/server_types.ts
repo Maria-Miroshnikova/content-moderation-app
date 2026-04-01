@@ -138,3 +138,21 @@ export interface IAdResponse {
     cards: ICard[],
     pagination: IAdPagination
 }
+
+export interface ICurrentPageParams {
+    totalItems?: number,
+    listId?: number,
+    modalView?: boolean,
+    action?: string
+}
+
+/*
+export function getDefaultCurrentPageParams(): ICurrentPageParams {
+    return {
+        page: PAGE_DEFAULT.toString(),
+        minPrice: FILTER_DEFAULT.cost_min,
+        maxPrice: FILTER_DEFAULT.cost_max,
+        status: Object.values(STATUS_META).map(meta => meta.server),
+        limit: LIMIT_DEFAULT.toString(),
+    }
+}*/
