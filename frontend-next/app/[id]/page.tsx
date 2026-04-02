@@ -108,9 +108,25 @@ interface PageProps {
 async function CurrentAdPage({ params, searchParams }: PageProps) {
     const { id } = await params;
     const search = await searchParams;
+    //const search: ICurrentPageParamsFull = await searchParams;
     // console.log("current page PARAMS: ", id, search)
 
-    const adDetails: IAd = await getAdByIdAndFilter(search, id) // getAdById(id)
+    const adDetails: IAd = await getAdByIdAndFilter(search) // getAdById(id)
+    if (adDetails.id !== Number(id))
+    {
+        const query = new URLSearchParams()
+        for (const key in search) {
+            const value = search[key]
+            if (Array.isArray(value)) {
+                value.forEach(v => query.append(key, v))
+            } else if (value != undefined) {
+                query.append(key, value)
+            }
+        }
+        const url_query = query.toString()
+
+        redirect(`/${adDetails.id}?${url_query}`)
+    }
     //const card: ICard = mapAdToCard(adDetails)
 
     function getRejectionPanelUrl(action: EStatus) {
@@ -118,6 +134,7 @@ async function CurrentAdPage({ params, searchParams }: PageProps) {
         //console.log("json: ", newParams)
         newParams.action = STATUS_META[action].server;
         newParams.modalView = true;
+        reconstructSearchParamsFromUrl(newParams)
         let url = getCurrentCardUrl(newParams, id);
         return url;
     }
@@ -190,7 +207,7 @@ async function getAdById(id: string) {
     return response_json;
 }
 
-async function getAdByIdAndFilter(params: ICurrentPageParamsFull, id: string) {
+async function getAdByIdAndFilter(params: ICurrentPageParamsFull) {
     const url = `http://localhost:3001/api/v1/ads`
 
     let newParams: ISearchParams = JSON.parse(JSON.stringify(params));
