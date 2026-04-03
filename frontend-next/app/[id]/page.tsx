@@ -14,7 +14,7 @@ import { EReason, EStatus, REASONS_META, STATUS_BY_SERVER_TITLE, STATUS_META } f
 import { revalidatePath } from 'next/cache';
 import RejectPanel from '../../components/RejectPanel';
 import { redirect } from 'next/navigation';
-import { getCurrentCardUrl, makeUrlCurrentPageParams, makeUrlFromParamsCombo, makeUrlSearchParamsForServer, makeUrlSearchParamsNoDefault, reconstructSearchParamsFromUrl } from '../../utils/makeUrlParamsFromLocalInterfaces';
+import { getCurrentCardUrl, makeUrlCurrentPageParams, makeUrlFromParamsCombo, makeUrlSearchParamsForServer, makeURLSearchParamsFromPageSearchParams, makeUrlSearchParamsNoDefault, reconstructSearchParamsFromUrl } from '../../utils/makeUrlParamsFromLocalInterfaces';
 
 
 async function approvePost(data: FormData) {
@@ -114,20 +114,11 @@ async function CurrentAdPage({ params, searchParams }: PageProps) {
     const adDetails: IAd = await getAdByIdAndFilter(search) // getAdById(id)
     if (adDetails.id !== Number(id))
     {
-        const query = new URLSearchParams()
-        for (const key in search) {
-            const value = search[key]
-            if (Array.isArray(value)) {
-                value.forEach(v => query.append(key, v))
-            } else if (value != undefined) {
-                query.append(key, value)
-            }
-        }
+        const query = makeURLSearchParamsFromPageSearchParams(search);
         const url_query = query.toString()
 
         redirect(`/${adDetails.id}?${url_query}`)
     }
-    //const card: ICard = mapAdToCard(adDetails)
 
     function getRejectionPanelUrl(action: EStatus) {
         let newParams: ICurrentPageParamsFull = JSON.parse(JSON.stringify(search));
@@ -199,7 +190,7 @@ async function getAdById(id: string) {
 
     })
 
-    if (!response.ok) throw new Error("Unable to fetch ads")
+    if (!response.ok) throw new Error("Unable to fetch current ad")
 
     const response_json: IAd = await response.json()
     //console.log(response_json)
@@ -226,7 +217,7 @@ async function getAdByIdAndFilter(params: ICurrentPageParamsFull) {
 
     })
 
-    if (!response.ok) throw new Error("Unable to fetch ads")
+    if (!response.ok) throw new Error("Unable to fetch current ad")
 
     const response_json: IGetAdsAnswer = await response.json()
     //console.log("resp from server: ", response_json.ads[0])

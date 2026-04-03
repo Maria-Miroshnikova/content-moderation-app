@@ -1,5 +1,5 @@
 import { ECategory, ESort, ESortDirection, EStatus, SORT_META, STATUS_META } from "../types/enums";
-import { ICurrentPageParams, ISearchParams, SEARCHPARAMS_DEFAILT } from "../types/server_types"
+import { getDefaultStatisticsPageParams, ICurrentPageParams, ISearchParams, IStatisticsPageParams, SEARCHPARAMS_DEFAILT } from "../types/server_types"
 import { IFilter, ISort } from "../types/local_types";
 import { ICurrentPageParamsFull } from "../app/[id]/page";
 
@@ -83,14 +83,14 @@ export function makeUrlSearchParamsNoDefault___old(params: ISearchParams) {
 }*/
 
 const keys: string[] = ['page',
-        'limit',
-        'search',
-        'status',
-        'sortBy',
-        'sortOrder',
-        'categoryId',
-        'maxPrice',
-        'minPrice']
+    'limit',
+    'search',
+    'status',
+    'sortBy',
+    'sortOrder',
+    'categoryId',
+    'maxPrice',
+    'minPrice']
 
 // эта функция ожидает, что status в params сейчас такой же как в фильтре, а не сокращенный
 export function makeUrlSearchParamsNoDefault(params: ISearchParams) {
@@ -117,7 +117,7 @@ export function makeUrlSearchParamsNoDefault(params: ISearchParams) {
 
 export function makeUrlCurrentPageParams(params: ICurrentPageParams) {
     const searchParams = new URLSearchParams()
- //   console.log("make current params: ", params)
+    //   console.log("make current params: ", params)
 
     if (params.action) {
         searchParams.append("action", params.action)
@@ -217,4 +217,24 @@ export function getCurrentCardUrl(search: ICurrentPageParamsFull, card_id: numbe
     // console.log("card to current - params SEARCH for url: ", url_params_search.toString(), "CURR for url: ", url_params_currend_ad.toString())
     const current_card_url: string = makeUrlFromParamsCombo([url_params_search.toString(), url_params_currend_ad.toString()], `/${card_id}`)
     return current_card_url
+}
+
+export function makeURLSearchParamsFromPageSearchParams(search: any): URLSearchParams {
+    const query = new URLSearchParams()
+    for (const key in search) {
+        const value = search[key]
+        if (Array.isArray(value)) {
+            value.forEach(v => query.append(key, v))
+        } else if (value != undefined) {
+            query.append(key, value)
+        }
+    }
+    return query;
+}
+
+export function makeStatisticsPageParamsDefault(params: IStatisticsPageParams) {
+    if (params.period == undefined || params.period == null)
+        params.period = getDefaultStatisticsPageParams().period
+    else
+        params.period = Number(params.period) 
 }

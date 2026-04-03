@@ -1,4 +1,4 @@
-import { ECategory, ESortDirection, STATUS_META } from "./enums";
+import { ECategory, EPeriod, ESortDirection, STATUS_META } from "./enums";
 import { FILTER_DEFAULT, ICard, LIMIT_DEFAULT, PAGE_DEFAULT, SORT_DEFAULT } from "./local_types";
 
 export interface ISearchParams {
@@ -15,14 +15,14 @@ export interface ISearchParams {
 }
 
 export const SEARCHPARAMS_DEFAILT: ISearchParams = {
- //   category: FILTER_DEFAULT.category.toString(),
+    //   category: FILTER_DEFAULT.category.toString(),
     page: PAGE_DEFAULT.toString(),
     minPrice: FILTER_DEFAULT.cost_min,
     maxPrice: FILTER_DEFAULT.cost_max,
- //   categoryId: FILTER_DEFAULT.category,
+    //   categoryId: FILTER_DEFAULT.category,
     search: FILTER_DEFAULT.search,
     status: Object.values(STATUS_META).map(meta => meta.server),
- //   sortOrder: ESortDirection.DOWN,
+    //   sortOrder: ESortDirection.DOWN,
     limit: LIMIT_DEFAULT.toString()
 }
 
@@ -116,7 +116,7 @@ export interface IAd {
     characteristics?: IAdCharacteristics
     createdAt: string // "2026-03-06T20:19:01.953Z"
     description: string,
-    id: number, 
+    id: number,
     images?: string[],
     moderationHistory?: IModerationHistoryItem[],
     price: number,
@@ -156,3 +156,42 @@ export function getDefaultCurrentPageParams(): ICurrentPageParams {
         limit: LIMIT_DEFAULT.toString(),
     }
 }*/
+
+export interface IStatisticsResponse {
+    approvedPercentage: number,
+    averageReviewTime: number,
+    rejectedPercentage: number,
+    requestChangesPercentage: number,
+    totalReviewed: number,
+    totalReviewedThisMonth: number,
+    totalReviewedThisWeek: number,
+    totalReviewedToday: number
+}
+
+export interface IModerStatistics {
+    approvalRate: number,
+    averageReviewTime: number,
+    thisMonthReviewed: number,
+    thisWeekReviewed: number,
+    todayReviewed: number,
+    totalReviewed: number
+}
+
+export interface IModeratorInfoResponse {
+    email: string,
+    id: number,
+    name: string,
+    permissions: string[], //    (4)['approve_ads', 'reject_ads', 'request_changes', 'view_stats']
+    role: string,
+    statistics: IModerStatistics
+}
+
+export interface IStatisticsPageParams {
+    period?: EPeriod
+}
+
+export function getDefaultStatisticsPageParams(): IStatisticsPageParams {
+    return {
+        period: EPeriod.TODAY
+    }
+}
