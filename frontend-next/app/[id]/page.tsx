@@ -106,9 +106,9 @@ async function CurrentAdPage({ params, searchParams }: PageProps) {
     const search = await searchParams;
 
     const adDetails: IAd = await getAdByIdAndFilter(search) // getAdById(id)
-    console.log("ads response: ", adDetails)
+    //console.log("ads response: ", adDetails)
     if (adDetails == undefined) {
-        redirect('/');
+        returnToFilteredList();
     }
 
     if (adDetails.id !== Number(id)) {
@@ -116,6 +116,16 @@ async function CurrentAdPage({ params, searchParams }: PageProps) {
         const url_query = query.toString()
 
         redirect(`/${adDetails.id}?${url_query}`)
+    }
+
+    function returnToFilteredList() {
+        const query = makeURLSearchParamsFromPageSearchParams(search);
+        query.delete("modalView")
+        query.delete("action")
+        query.delete("totalItems")
+        query.delete("listId")
+        const url_query = query.toString()
+        redirect(`/?${url_query}`);
     }
 
     function getRejectionPanelUrl(action: EStatus) {
