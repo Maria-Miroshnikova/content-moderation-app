@@ -5,7 +5,7 @@ import cl from "../styles/RejectPanel.module.css"
 import { EReason, EStatus, REASONS_META, STATUS_META } from "../types/enums"
 import { useRouter, useSearchParams } from "next/navigation"
 import { ICurrentPageParamsFull } from "../app/[id]/page"
-import { getCurrentCardUrl } from "../utils/makeUrlParamsFromLocalInterfaces"
+import { getCurrentCardUrl, reconstructSearchParamsFromUrl } from "../utils/makeUrlParamsFromLocalInterfaces"
 
 interface RejectPanelProps {
     params: ICurrentPageParamsFull,
@@ -29,6 +29,7 @@ const RejectPanel = ({params, actionType, id, isVisible, rejectPost, draftPost }
         //console.log("json: ", newParams)
         delete newParams.action;
         delete newParams.modalView;
+        reconstructSearchParamsFromUrl(newParams);
         let url = getCurrentCardUrl(newParams, id);
         return url;
     }

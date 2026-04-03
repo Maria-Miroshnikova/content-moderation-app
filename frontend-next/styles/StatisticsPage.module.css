@@ -1,0 +1,94 @@
+.stats_page_layout {
+    width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 40px;
+
+    border: 1px solid black;
+    border-radius: 10px;
+
+    padding: 20px;
+}
+
+.moder_panel {
+    border: 1px solid black;
+    border-radius: 10px;
+
+    padding: 20px;
+    background-color: blanchedalmond;
+
+    display: flex;
+    flex-direction: column;
+    gap:20px
+}
+
+.btn {
+    background-color: white;
+    padding: 10px;
+}
+
+.btn_current {
+    background-color: antiquewhite;
+}
+
+.period_panel{
+    display: flex;
+    gap: 0px;
+
+    border: 1px solid black;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.period_btns_container {
+    display: flex;
+    gap: 20px;
+
+    padding: 10px;
+
+}
+
+.stats_layout {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.stats_container{
+    display: flex;
+    justify-content: space-evenly;
+    gap: 20px;
+}
+
+.stats_panel {
+    border: 1px solid black;
+    border-radius: 10px;
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    padding: 10px;
+
+    min-height: 5vh;
+    max-height: 5vh;
+}
+.stats_panel p {
+    text-align: center;
+}
+
+.graphic_container{
+    border: 1px solid black;
+    border-radius: 15px;
+
+    padding: 10px;
+    min-height: 20vh;
+    max-height: 20vh;
+    display: flex;
+    justify-content: center;
+    gap: 20px
+}

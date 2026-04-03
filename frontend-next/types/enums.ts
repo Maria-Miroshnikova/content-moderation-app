@@ -119,7 +119,7 @@ export enum EStatus {
 // TODO нужно скорее всего разделять серверные названия в отдельный словарь, т.к. строки для одного и того же ответа с сервера могут быть разные!
 export const STATUS_META: Record<
     EStatus,
-    { title: string, server: string, movalView?: string}
+    { title: string, server: string, movalView?: string }
 > = {
     [EStatus.ACCEPTED]: { title: "Одобрена", server: "approved" },
     [EStatus.INPROCESS]: { title: "На модерации", server: "pending" },
@@ -165,3 +165,32 @@ export const REASONS_META: Record<
     [EReason.HACKERS]: "Подозрение на мошенничество",
     [EReason.OTHER]: "Другое",
 };
+
+
+export const PERMISSIONS_META: Record<
+    string,
+    string
+> = {
+    ['approve_ads']: "одобрение",
+    ['reject_ads']: "отклонение",
+    ['request_changes']: "возврат на доработку",
+    ['view_stats']: "просмотр статистики"
+}
+
+export enum EPeriod {
+    TODAY,
+    WEEK,
+    MONTH,
+    CUSTOM
+}
+
+export const PERIOD_META: Record<
+    EPeriod,
+    {title: string, server: string}
+> = {
+    [EPeriod.TODAY]: {title: "сегодня", server: "today"},
+    [EPeriod.WEEK]: {title: "за неделю", server: "week"},
+    [EPeriod.MONTH]: {title: "за месяц", server: "month"},
+    [EPeriod.CUSTOM]: {title: "свой период", server: "custom"}
+}
+

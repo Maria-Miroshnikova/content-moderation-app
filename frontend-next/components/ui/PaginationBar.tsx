@@ -20,12 +20,10 @@ const PaginationBar = ({ totalPages, totalItems, page }: PaginationBarProps) => 
 
 
     const pageArray = useMemo(() => {
-        //console.log("create array for totalPages: ", totalPages)
         let arr = []
         for (let i = 0; i < totalPages; ++i) {
             arr.push(i + 1)
         }
-        //console.log(arr)
         return arr
     }, [totalPages])
 

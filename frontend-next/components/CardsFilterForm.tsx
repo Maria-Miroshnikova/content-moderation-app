@@ -46,7 +46,6 @@ const CardsFilterForm: FC<CardsFilterFormProps> = ({ filter }) => {
     }
 
     function handleFilterChange(filter: IFilter) {
-      //  console.log("filter when change: ", filter)
         let params: ISearchParams = parseSearchParams(searchParams);
         setFilterParams(params, filter);
         params.page = PAGE_DEFAULT.toString();

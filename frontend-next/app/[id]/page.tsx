@@ -14,14 +14,13 @@ import { EReason, EStatus, REASONS_META, STATUS_BY_SERVER_TITLE, STATUS_META } f
 import { revalidatePath } from 'next/cache';
 import RejectPanel from '../../components/RejectPanel';
 import { redirect } from 'next/navigation';
-import { getCurrentCardUrl, makeUrlCurrentPageParams, makeUrlFromParamsCombo, makeUrlSearchParamsForServer, makeUrlSearchParamsNoDefault, reconstructSearchParamsFromUrl } from '../../utils/makeUrlParamsFromLocalInterfaces';
+import { getCurrentCardUrl, makeUrlCurrentPageParams, makeUrlFromParamsCombo, makeUrlSearchParamsForServer, makeURLSearchParamsFromPageSearchParams, makeUrlSearchParamsNoDefault, reconstructSearchParamsFromUrl } from '../../utils/makeUrlParamsFromLocalInterfaces';
 
 
 async function approvePost(data: FormData) {
     'use server';
 
     const { cardId } = Object.fromEntries(data);
-    //const url_redirect: string = data.get('url') as string;
 
     const response = await fetch(`http://localhost:3001/api/v1/ads/${cardId}/approve?id=${cardId}`, {
         method: "POST"
@@ -29,9 +28,9 @@ async function approvePost(data: FormData) {
     });
 
     const resp = await response.json();
-    //console.log(resp);
     revalidatePath(`/${cardId}`)
     revalidatePath('/');
+    revalidatePath('/stats');
 }
 
 
@@ -43,8 +42,6 @@ async function rejectPost(data: FormData) {
     const reasotText: string = REASONS_META[reason];
     const comment: string = data.get('comment') as string;
     const url_redirect: string = data.get('url') as string;
-
-    console.log(cardId, reason, comment);
 
     const response = await fetch(`http://localhost:3001/api/v1/ads/${cardId}/reject?id=${cardId}`, {
         method: "POST",
@@ -58,9 +55,8 @@ async function rejectPost(data: FormData) {
     });
 
     const resp = await response.json();
-    //console.log("ответ сервера reject: ", resp);
-
     revalidatePath('/');
+    revalidatePath('/stats');
     revalidatePath(`/${cardId}`);
     redirect(url_redirect);
 }
@@ -72,10 +68,7 @@ async function draftPost(data: FormData) {
     const reason: EReason = Number(data.get('reason') as string);
     const reasotText: string = REASONS_META[reason];
     const comment: string = data.get('comment') as string;
-
     const url_redirect: string = data.get('url') as string;
-
-    console.log(cardId, reason, comment);
 
     const response = await fetch(`http://localhost:3001/api/v1/ads/${cardId}/request-changes?id=${cardId}`, {
         method: "POST",
@@ -89,10 +82,9 @@ async function draftPost(data: FormData) {
     });
 
     const resp = await response.json();
-    //console.log("ответ сервера reject: ", resp);
-
     revalidatePath('/');
     revalidatePath(`/${cardId}`);
+    revalidatePath('/stats');
     redirect(url_redirect);
 }
 
@@ -105,19 +97,42 @@ interface PageProps {
     searchParams: ICurrentPageParamsFull
 }
 
+// TODO: сейчас страница обновляется сразу после модерации, сервер полагается на list Id
+// если в фильтрах есть статус и статус объявления меняется на не входящий в фильтры,
+// карточка сразу перелистнется на следующую!
+// надо в будущем сделать контекст
 async function CurrentAdPage({ params, searchParams }: PageProps) {
     const { id } = await params;
     const search = await searchParams;
-    // console.log("current page PARAMS: ", id, search)
 
-    const adDetails: IAd = await getAdByIdAndFilter(search, id) // getAdById(id)
-    //const card: ICard = mapAdToCard(adDetails)
+    const adDetails: IAd = await getAdByIdAndFilter(search) // getAdById(id)
+    //console.log("ads response: ", adDetails)
+    if (adDetails == undefined) {
+        returnToFilteredList();
+    }
+
+    if (adDetails.id !== Number(id)) {
+        const query = makeURLSearchParamsFromPageSearchParams(search);
+        const url_query = query.toString()
+
+        redirect(`/${adDetails.id}?${url_query}`)
+    }
+
+    function returnToFilteredList() {
+        const query = makeURLSearchParamsFromPageSearchParams(search);
+        query.delete("modalView")
+        query.delete("action")
+        query.delete("totalItems")
+        query.delete("listId")
+        const url_query = query.toString()
+        redirect(`/?${url_query}`);
+    }
 
     function getRejectionPanelUrl(action: EStatus) {
         let newParams: ICurrentPageParamsFull = JSON.parse(JSON.stringify(search));
-        //console.log("json: ", newParams)
         newParams.action = STATUS_META[action].server;
         newParams.modalView = true;
+        reconstructSearchParamsFromUrl(newParams)
         let url = getCurrentCardUrl(newParams, id);
         return url;
     }
@@ -131,6 +146,28 @@ async function CurrentAdPage({ params, searchParams }: PageProps) {
         reconstructSearchParamsFromUrl(newParams);
         const url_params: URLSearchParams = makeUrlSearchParamsNoDefault(newParams);
         const url_with_params: string = makeUrlFromParamsCombo(url_params.toString(), '/')
+        return url_with_params;
+    }
+
+    function getSideAdUrl(toLeft: boolean) {
+        let newParams: ICurrentPageParamsFull = JSON.parse(JSON.stringify(search));
+        if (toLeft) {
+            let new_value = Number(search.listId) - 1;
+            newParams.listId = new_value;
+        }
+        else {
+            let new_value = Number(search.listId) + 1;
+            newParams.listId = new_value;
+        }
+        delete newParams.action;
+        delete newParams.modalView;
+        reconstructSearchParamsFromUrl(newParams);
+
+        const url_params_currend_ad: URLSearchParams = makeUrlCurrentPageParams(newParams);
+        const url_params_search: URLSearchParams = makeUrlSearchParamsNoDefault(newParams);
+        const fake_card_id = 0;
+        const url_with_params: string = makeUrlFromParamsCombo([url_params_search.toString(), url_params_currend_ad.toString()], `/${fake_card_id}`)
+
         return url_with_params;
     }
 
@@ -164,6 +201,12 @@ async function CurrentAdPage({ params, searchParams }: PageProps) {
             </div>
             <div className={cl.navigation_panel}>
                 <Link href={getAllAdsUrl()}>К списку</Link>
+                <div>
+                    {(Number(search.listId) > 1) &&
+                        <Link href={getSideAdUrl(true)}>Пред</Link>}
+                    {(Number(search.listId) < Number(search.totalItems)) &&
+                        <Link href={getSideAdUrl(false)}>След</Link>}
+                </div>
             </div>
         </div>
     );
@@ -182,7 +225,7 @@ async function getAdById(id: string) {
 
     })
 
-    if (!response.ok) throw new Error("Unable to fetch ads")
+    if (!response.ok) throw new Error("Unable to fetch current ad")
 
     const response_json: IAd = await response.json()
     //console.log(response_json)
@@ -190,7 +233,7 @@ async function getAdById(id: string) {
     return response_json;
 }
 
-async function getAdByIdAndFilter(params: ICurrentPageParamsFull, id: string) {
+async function getAdByIdAndFilter(params: ICurrentPageParamsFull) {
     const url = `http://localhost:3001/api/v1/ads`
 
     let newParams: ISearchParams = JSON.parse(JSON.stringify(params));
@@ -209,129 +252,10 @@ async function getAdByIdAndFilter(params: ICurrentPageParamsFull, id: string) {
 
     })
 
-    if (!response.ok) throw new Error("Unable to fetch ads")
+    if (!response.ok) throw new Error("Unable to fetch current ad")
 
     const response_json: IGetAdsAnswer = await response.json()
     //console.log("resp from server: ", response_json.ads[0])
 
     return response_json.ads[0];
 }
-
-/*
-
-const AdsDetailPage = () => {
-
-    const navigate = useNavigate();
-
-    const [adsData, setAdsData] = useState({})
-
-    const params = useParams()
-
-    const [fetchHistory, isLoadingHistory, errorHistory] = useFetching(async (id) => {
-        const response = await Service.getAdsById(id)
-        //console.log("form resp after fetch: ", response)
-        setAdsData(response)
-    })
-
-    // для отслеживания нажатия на кнопки
-    const [actionStatus, setAtionStatus] = useState(true)
-    const [actionType, setActionType] = useState(-1)
-
-    const [idLeft, setIdLeft] = useState(-1)
-    const [idRight, setIdRight] = useState(-1)
-
-    // загрузка карточек по бокам для возможности листать влево-вправо
-    const [fetchSideCards, isLoadingSideCards, errorSideCards] = useFetching(async () => {
-        if (idPage < totalItems) {
-            let i = idPage + 1;
-            const response = await Service.getAll(1, i, filter, sort)
-            //console.log("right el: ", response.data.pagination)
-            setIdRight(response.data.ads[0].id)
-        }
-        else
-            setIdRight(-1)
-
-        if (idPage > 1) {
-            let i = idPage - 1;
-            const response = await Service.getAll(1, i, filter, sort)
-            //console.log("left el: ", response.data.pagination.page)
-            setIdLeft(response.data.ads[0].id)
-        }
-        else
-            setIdLeft(-1)
-    })
-
-    // загрузка карточек по бокам для возможности листать влево-вправо
-    useEffect(() => {
-        //    console.log("totalItems: ", totalItems)
-        //console.log("id-page: ", idPage)
-        fetchSideCards()
-    }, [params.id])
-
-    const handeClickLeft = (e) => {
-        e.preventDefault();
-        let i = idPage - 1;
-        setIdPage(i);
-        navigate(`/item/${idLeft}`)
-    }
-
-    const handleClickRight = (e) => {
-        e.preventDefault();
-        let i = idPage + 1;
-        setIdPage(i);
-        navigate(`/item/${idRight}`)
-    }
-
-    const [postApprove, isLoadingApprove, errorApprove] = useFetching(async (id) => {
-        const response = await Service.postApproveById(id)
-        //console.log(response.data)
-        setAtionStatus(!actionStatus)
-    })
-
-    const [modalVisibility, setModalVisibility] = useState(false)
-
-    return (
-        <div className={cl.AdsDetailsPage_layout}>
-            <ModalView isVisible={modalVisibility} setIsVisible={setModalVisibility}>
-                <RejectPanel actionType={actionType} actionStatus={actionStatus} setAtionStatus={setAtionStatus} id={params.id} setVisibility={setModalVisibility}/>
-            </ModalView>
-
-            <div className={cl.gallery_and_history_layout}>
-                <GalleryPanel images={adsData.images} className={cl.gallery} />
-                <ModerationHistoryPanel history={adsData.moderationHistory} className={cl.history} />
-            </div>
-            <div className={cl.description}>
-                <DescriptionPanel data={adsData} />
-            </div>
-            <div className={cl.buttons_panel}>
-                <button onClick={() => postApprove(params.id)}>
-                    Одобрить
-                </button>
-                <button onClick={() => {
-                    setActionType(STATUS_DECLINED);
-                    setModalVisibility(true)
-                }}
-                >
-                    Отклонить</button>
-                <button onClick={() => {
-                    setActionType(STATUS_DRAFT);
-                    setModalVisibility(true)
-                }}
-                >
-                    Доработка
-                </button>
-            </div>
-            <div className={cl.navigation_panel}>
-                <Link to="/list">К списку</Link>
-                <div>
-                    {(idLeft !== -1) &&
-                        <Link to={`/item/${idLeft}`} onClick={(e) => handeClickLeft(e)}>Пред |</Link>}
-                    {(idRight !== -1) &&
-                        <Link to={`/item/${idRight}`} onClick={(e) => handleClickRight(e)}>След</Link>}
-                </div>
-            </div>
-        </div>
-    )
-}
-
-export default AdsDetailPage;*/
