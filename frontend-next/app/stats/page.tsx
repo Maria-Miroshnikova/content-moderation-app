@@ -2,29 +2,10 @@
 import Link from 'next/link';
 import cl from '../../styles/StatisticsPage.module.css';
 import { EPeriod, PERIOD_META, PERMISSIONS_META } from '../../types/enums';
-import { getDefaultStatisticsPageParams, IModeratorInfoResponse, IStatisticsPageParams, IStatisticsResponse } from '../../types/server_types';
+import { getDefaultStatisticsPageParams, IActivityItemStats, IActivityResponse, ICategoriesStats, IDecisionStats, IModeratorInfoResponse, IStatisticsPageParams, IStatisticsResponse } from '../../types/server_types';
 import { makeStatisticsPageParamsDefault, makeURLSearchParamsFromPageSearchParams } from '../../utils/makeUrlParamsFromLocalInterfaces';
-
-/*export const PERIOD = ["today", "week", "month", "custom"]
-export const PERIOD_TODAY = 0;
-export const PERIOD_WEEK = 1;
-export const PERIOD_MONTH = 2;
-export const PERIOD_CUSTOM = 3;*/
-//export const PERIOD_TOTAL = 4;
-
-/*const DEFAULT_ACTIVITY_ITEM = {
-    "date": 0,
-    "approved": 0,
-    "rejected": 0,
-    "requestChanges": 0
-}
-
-const DEFAULT_DECISION = {
-    "approved": 0,
-    "rejected": 0,
-    "requestChanges": 0
-}
-*/
+import BarChart from '../../components/ui/BarChart';
+import PieChart from '../../components/ui/PieChart';
 
 interface StatisticsPageProps {
     searchParams: IStatisticsPageParams
@@ -33,11 +14,16 @@ interface StatisticsPageProps {
 async function StatisticsPage({ searchParams }: StatisticsPageProps) {
     const params = await searchParams;
     makeStatisticsPageParamsDefault(params);
-   // console.log("get params: ", params)
+    // console.log("get params: ", params)
     const url_params: URLSearchParams = makeURLSearchParamsFromPageSearchParams(params);
 
     const moderInfo: IModeratorInfoResponse = await getModeratorInfo();
     const statsInfo: IStatisticsResponse = await getStatisticsInfo(params.period);
+    const activityInfo: IActivityItemStats[] = await getActivityInfo(params.period);
+    //console.log("activities array: ", activityInfo)
+
+    const decisionInfo: IDecisionStats = await getDecisionsInfo(params.period);
+    const categoriesInfo: ICategoriesStats = await getCategoriesInfo(params.period);
 
     function getUrlForPeriodButtons(period: EPeriod) {
         if (period == getDefaultStatisticsPageParams().period) {
@@ -148,6 +134,36 @@ async function StatisticsPage({ searchParams }: StatisticsPageProps) {
                 </div>
             </div>
 
+            <div className={cl.graphic_container}>
+                <BarChart
+                    labels={activityInfo.map((g) => getFormatDateDM(g.date))}
+                    values={activityInfo.map((g) => (g.rejected + g.approved + g.requestChanges))}
+                    period={params.period}
+                    label={"Количество обработанных объявлений"}
+                />
+            </div>
+
+            <div className={cl.graphic_container}>
+                <PieChart
+                    approved={decisionInfo.approved}
+                    rejected={decisionInfo.rejected}
+                    requestChanges={decisionInfo.requestChanges}
+                />
+                <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                    <p>Одобрено: {Number(decisionInfo.approved.toFixed(1))}%</p>
+                    <p>Отклонено: {Number(decisionInfo.rejected.toFixed(1))}%</p>
+                    <p>Возвращено: {Number(decisionInfo.requestChanges.toFixed(1))}%</p>
+                </div>
+            </div>
+
+            <div className={cl.graphic_container}>
+                <BarChart
+                    labels={Object.entries(categoriesInfo).map((i) => i[0])}
+                    values={Object.entries(categoriesInfo).map((i) => i[1])}
+                    period={params.period}
+                    label={"Количество обработанных объявлений в категории"}
+                />
+            </div>
 
         </div >
     );
@@ -186,116 +202,61 @@ async function getStatisticsInfo(period: EPeriod) {
     if (!response.ok) throw new Error("Unable to fetch statistics info")
 
     const response_json: IStatisticsResponse = await response.json()
-    console.log(response_json)
+    //  console.log(response_json)
 
     return response_json;
 }
 
-
-
-/*
-
-const [stats, setStats] = useState({
-        "approvedPercentage": 0,
-        "rejectedPercentage": 0,
-        "averageReviewTime": 0,
-        "totalReviewed": 0,
-        "totalReviewedThisMonth": 0,
-        "totalReviewedThisWeek": 0,
-        "totalReviewedToday": 3,
+async function getActivityInfo(period: EPeriod) {
+    const url = `http://localhost:3001/api/v1/stats/chart/activity`
+    //console.log("period: ", PERIOD_META[period].server)
+    const response = await fetch(`${url}?${PERIOD_META[period].server}`, {
+        next: {
+            revalidate: 60
+        },
 
     })
 
-    const [moderInfo, setModerInfo] = useState(DEFAULT_MODERINFO)
+    if (!response.ok) throw new Error("Unable to fetch activity info")
 
-    const [graphic, setGraphic] = useState([])
+    const response_json: IActivityItemStats[] = await response.json()
+    //console.log(response_json)
 
-    const [period, setPeriod] = useState(PERIOD_MONTH)
+    return response_json;
+}
 
-    const [decisions, setDecision] = useState(DEFAULT_DECISION)
+async function getDecisionsInfo(period: EPeriod) {
+    const url = `http://localhost:3001/api/v1/stats/chart/decisions`
+    //console.log("period: ", PERIOD_META[period].server)
+    const response = await fetch(`${url}?${PERIOD_META[period].server}`, {
+        next: {
+            revalidate: 60
+        },
 
-    const [categories, setCategories] = useState({})
-
-    const [fetchModer, isLoadingModer, errorModer] = useFetching(async () => {
-        const response = await Service.getModerator();
-       // console.log("moder: ", response.data)
-        setModerInfo(response.data)
     })
 
-    const [fetchStats, isLoadingStats, errorStats] = useFetching(async () => {
-        const response = await Service.getStats(PERIOD[period], null, null);
-       // console.log("stats: ", response.data)
-        setStats(response.data)
+    if (!response.ok) throw new Error("Unable to fetch decisions info")
+
+    const response_json: IDecisionStats = await response.json()
+    // console.log(response_json)
+
+    return response_json;
+}
+
+async function getCategoriesInfo(period: EPeriod) {
+    const url = `http://localhost:3001/api/v1/stats/chart/categories`
+    //console.log("period: ", PERIOD_META[period].server)
+    const response = await fetch(`${url}?${PERIOD_META[period].server}`, {
+        next: {
+            revalidate: 60
+        },
+
     })
 
-    const [fetchActivity, isLoadingActivity, errorActivity] = useFetching(async () => {
-        const response = await Service.getActivityGraphic(PERIOD[period], null, null);
-        setGraphic(response.data)
-       // console.log("activity: ", response.data)
-    })
+    if (!response.ok) throw new Error("Unable to fetch categories info")
 
-    const [fetchDecisions, isLoadingDecisions, errorDecisions] = useFetching(async () => {
-        const response = await Service.getDecisionGraphic(PERIOD[period], null, null);
-        setDecision(response.data)
-     //   console.log("decision: ", response.data)
-    })
+    const response_json: ICategoriesStats = await response.json()
+    //console.log(response_json)
 
-    const [fetchCategories, isLoadingCategories, errorCategories] = useFetching(async () => {
-        const response = await Service.getCategoryGraphic(PERIOD[period], null, null);
-        setCategories(response.data)
-       // console.log("categories: ", response.data)
-    })
-
-    useEffect(() => {
-        fetchModer()
-    }, [])
-
-    useEffect(() => {
-        fetchStats()
-        fetchActivity()
-        fetchDecisions()
-        fetchCategories()
-    }, [period])
-
-
-    // totalMonth = 0, totalWeek = 0, totalToday = 3 - это КАК? Вопрос к API
-    return (
-        <div className={cl.stats_page_layout}>
-            
-            
-            <div className={cl.graphic_container}>
-                <BarChart
-                    labels={graphic.map((g) => getFormatDateDM(g.date))}
-                    values={graphic.map((g) => (g.rejected + g.approved + g.requestChanges))}
-                    period={period}
-                    label={"Количество обработанных объявлений"}
-                />
-            </div>
-            <div className={cl.graphic_container}>
-                <PieChart
-                    approved={decisions.approved}
-                    rejected={decisions.rejected}
-                    requestChanges={decisions.requestChanges}
-                />
-                <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                    <p>Одобрено: {Number(decisions.approved.toFixed(1))}%</p>
-                    <p>Отклонено: {Number(decisions.rejected.toFixed(1))}%</p>
-                    <p>Возвращено: {Number(decisions.requestChanges.toFixed(1))}%</p>
-                </div>
-            </div>
-
-            <div className={cl.graphic_container}>
-                <BarChart
-                    labels={Object.entries(categories).map((i) => i[0])}
-                    values={Object.entries(categories).map((i) => i[1])}
-                    period={period}
-                    label={"Количество обработанных объявлений в категории"}
-                />
-            </div>
-
-
-        </div >
-    )
-
-
-*/
+    return response_json;
+}

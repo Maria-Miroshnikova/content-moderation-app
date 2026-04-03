@@ -186,6 +186,21 @@ export interface IModeratorInfoResponse {
     statistics: IModerStatistics
 }
 
+export interface IActivityItemStats {
+    approved: number,
+    date: string, //"2026-03-27"
+    rejected: number
+    requestChanges: number
+}
+
+export interface IDecisionStats {
+    approved: number,
+    rejected: number,
+    requestChanges: number
+}
+
+export type ICategoriesStats = Record<string, number>
+
 export interface IStatisticsPageParams {
     period?: EPeriod
 }
