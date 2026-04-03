@@ -62,8 +62,8 @@ async function rejectPost(data: FormData) {
     //console.log("ответ сервера reject: ", resp);
 
     revalidatePath('/');
-    revalidatePath(`/${cardId}`);
     revalidatePath('/stats');
+    revalidatePath(`/${cardId}`);
     redirect(url_redirect);
 }
 
@@ -115,8 +115,12 @@ async function CurrentAdPage({ params, searchParams }: PageProps) {
     // console.log("current page PARAMS: ", id, search)
 
     const adDetails: IAd = await getAdByIdAndFilter(search) // getAdById(id)
-    if (adDetails.id !== Number(id))
-    {
+    console.log("ads response: ", adDetails)
+    if (adDetails == undefined) {
+        redirect('/');
+    }
+    
+    if (adDetails.id !== Number(id)) {
         const query = makeURLSearchParamsFromPageSearchParams(search);
         const url_query = query.toString()
 
@@ -142,6 +146,29 @@ async function CurrentAdPage({ params, searchParams }: PageProps) {
         reconstructSearchParamsFromUrl(newParams);
         const url_params: URLSearchParams = makeUrlSearchParamsNoDefault(newParams);
         const url_with_params: string = makeUrlFromParamsCombo(url_params.toString(), '/')
+        return url_with_params;
+    }
+
+    function getSideAdUrl(toLeft: boolean) {
+        let newParams: ICurrentPageParamsFull = JSON.parse(JSON.stringify(search));
+        if (toLeft) {
+            let new_value = Number(search.listId) - 1;
+            newParams.listId = new_value;
+        }
+        else {
+            let new_value = Number(search.listId) + 1;
+            newParams.listId = new_value;
+        }
+        // console.log("snapshot:", JSON.parse(JSON.stringify(newParams)));
+        delete newParams.action;
+        delete newParams.modalView;
+        reconstructSearchParamsFromUrl(newParams);
+
+        const url_params_currend_ad: URLSearchParams = makeUrlCurrentPageParams(newParams);
+        const url_params_search: URLSearchParams = makeUrlSearchParamsNoDefault(newParams);
+        const fake_card_id = 0;
+        const url_with_params: string = makeUrlFromParamsCombo([url_params_search.toString(), url_params_currend_ad.toString()], `/${fake_card_id}`)
+
         return url_with_params;
     }
 
@@ -175,6 +202,12 @@ async function CurrentAdPage({ params, searchParams }: PageProps) {
             </div>
             <div className={cl.navigation_panel}>
                 <Link href={getAllAdsUrl()}>К списку</Link>
+                <div>
+                    {(Number(search.listId) > 1) &&
+                        <Link href={getSideAdUrl(true)}>Пред</Link>}
+                    {(Number(search.listId) < Number(search.totalItems)) &&
+                        <Link href={getSideAdUrl(false)}>След</Link>}
+                </div>
             </div>
         </div>
     );
