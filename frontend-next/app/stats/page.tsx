@@ -14,13 +14,11 @@ interface StatisticsPageProps {
 async function StatisticsPage({ searchParams }: StatisticsPageProps) {
     const params = await searchParams;
     makeStatisticsPageParamsDefault(params);
-    // console.log("get params: ", params)
     const url_params: URLSearchParams = makeURLSearchParamsFromPageSearchParams(params);
 
     const moderInfo: IModeratorInfoResponse = await getModeratorInfo();
     const statsInfo: IStatisticsResponse = await getStatisticsInfo(params.period);
     const activityInfo: IActivityItemStats[] = await getActivityInfo(params.period);
-    //console.log("activities array: ", activityInfo)
 
     const decisionInfo: IDecisionStats = await getDecisionsInfo(params.period);
     const categoriesInfo: ICategoriesStats = await getCategoriesInfo(params.period);
@@ -173,37 +171,27 @@ export default StatisticsPage;
 
 async function getModeratorInfo() {
     const url = `http://localhost:3001/api/v1/moderators/me`
-
     const response = await fetch(url, {
         next: {
             revalidate: 60
         },
 
     })
-
     if (!response.ok) throw new Error("Unable to fetch moderator info")
-
     const response_json: IModeratorInfoResponse = await response.json()
-    //    console.log(response_json)
-
     return response_json;
 }
 
 async function getStatisticsInfo(period: EPeriod) {
     const url = `http://localhost:3001/api/v1/stats/summary`
-    //console.log("period: ", PERIOD_META[period].server)
     const response = await fetch(`${url}?${PERIOD_META[period].server}`, {
         next: {
             revalidate: 60
         },
 
     })
-
     if (!response.ok) throw new Error("Unable to fetch statistics info")
-
     const response_json: IStatisticsResponse = await response.json()
-    //  console.log(response_json)
-
     return response_json;
 }
 
@@ -216,12 +204,8 @@ async function getActivityInfo(period: EPeriod) {
         },
 
     })
-
     if (!response.ok) throw new Error("Unable to fetch activity info")
-
     const response_json: IActivityItemStats[] = await response.json()
-    //console.log(response_json)
-
     return response_json;
 }
 
@@ -234,29 +218,20 @@ async function getDecisionsInfo(period: EPeriod) {
         },
 
     })
-
     if (!response.ok) throw new Error("Unable to fetch decisions info")
-
     const response_json: IDecisionStats = await response.json()
-    // console.log(response_json)
-
     return response_json;
 }
 
 async function getCategoriesInfo(period: EPeriod) {
     const url = `http://localhost:3001/api/v1/stats/chart/categories`
-    //console.log("period: ", PERIOD_META[period].server)
     const response = await fetch(`${url}?${PERIOD_META[period].server}`, {
         next: {
             revalidate: 60
         },
 
     })
-
     if (!response.ok) throw new Error("Unable to fetch categories info")
-
     const response_json: ICategoriesStats = await response.json()
-    //console.log(response_json)
-
     return response_json;
 }

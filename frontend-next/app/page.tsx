@@ -38,7 +38,6 @@ async function getAds(params: ISearchParams) {
     const url = `http://localhost:3001/api/v1/ads`
     const url_params: URLSearchParams = makeUrlSearchParamsForServer(params)
     const url_with_params: string = makeUrlFromParamsCombo(url_params.toString(), url)
-    //console.log("server url: ", url_with_params)
 
     const response = await fetch(url_with_params, {
         next: {
@@ -50,7 +49,6 @@ async function getAds(params: ISearchParams) {
     if (!response.ok) throw new Error("Unable to fetch ads")
 
     const response_json: IGetAdsAnswer = await response.json()
-    // console.log(response_json)
     const cards: ICard[] = response_json.ads.map(mapAdToCard)
     const pagination: IAdPagination = response_json.pagination;
     const adsResponse: IAdResponse = {

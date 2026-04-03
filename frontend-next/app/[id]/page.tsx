@@ -21,7 +21,6 @@ async function approvePost(data: FormData) {
     'use server';
 
     const { cardId } = Object.fromEntries(data);
-    //const url_redirect: string = data.get('url') as string;
 
     const response = await fetch(`http://localhost:3001/api/v1/ads/${cardId}/approve?id=${cardId}`, {
         method: "POST"
@@ -29,7 +28,6 @@ async function approvePost(data: FormData) {
     });
 
     const resp = await response.json();
-    //console.log(resp);
     revalidatePath(`/${cardId}`)
     revalidatePath('/');
     revalidatePath('/stats');
@@ -45,8 +43,6 @@ async function rejectPost(data: FormData) {
     const comment: string = data.get('comment') as string;
     const url_redirect: string = data.get('url') as string;
 
-    console.log(cardId, reason, comment);
-
     const response = await fetch(`http://localhost:3001/api/v1/ads/${cardId}/reject?id=${cardId}`, {
         method: "POST",
         headers: {
@@ -59,8 +55,6 @@ async function rejectPost(data: FormData) {
     });
 
     const resp = await response.json();
-    //console.log("ответ сервера reject: ", resp);
-
     revalidatePath('/');
     revalidatePath('/stats');
     revalidatePath(`/${cardId}`);
@@ -74,10 +68,7 @@ async function draftPost(data: FormData) {
     const reason: EReason = Number(data.get('reason') as string);
     const reasotText: string = REASONS_META[reason];
     const comment: string = data.get('comment') as string;
-
     const url_redirect: string = data.get('url') as string;
-
-    console.log(cardId, reason, comment);
 
     const response = await fetch(`http://localhost:3001/api/v1/ads/${cardId}/request-changes?id=${cardId}`, {
         method: "POST",
@@ -91,8 +82,6 @@ async function draftPost(data: FormData) {
     });
 
     const resp = await response.json();
-    //console.log("ответ сервера reject: ", resp);
-
     revalidatePath('/');
     revalidatePath(`/${cardId}`);
     revalidatePath('/stats');
@@ -108,18 +97,20 @@ interface PageProps {
     searchParams: ICurrentPageParamsFull
 }
 
+// TODO: сейчас страница обновляется сразу после модерации, сервер полагается на list Id
+// если в фильтрах есть статус и статус объявления меняется на не входящий в фильтры,
+// карточка сразу перелистнется на следующую!
+// надо в будущем сделать контекст
 async function CurrentAdPage({ params, searchParams }: PageProps) {
     const { id } = await params;
     const search = await searchParams;
-    //const search: ICurrentPageParamsFull = await searchParams;
-    // console.log("current page PARAMS: ", id, search)
 
     const adDetails: IAd = await getAdByIdAndFilter(search) // getAdById(id)
     console.log("ads response: ", adDetails)
     if (adDetails == undefined) {
         redirect('/');
     }
-    
+
     if (adDetails.id !== Number(id)) {
         const query = makeURLSearchParamsFromPageSearchParams(search);
         const url_query = query.toString()
@@ -129,7 +120,6 @@ async function CurrentAdPage({ params, searchParams }: PageProps) {
 
     function getRejectionPanelUrl(action: EStatus) {
         let newParams: ICurrentPageParamsFull = JSON.parse(JSON.stringify(search));
-        //console.log("json: ", newParams)
         newParams.action = STATUS_META[action].server;
         newParams.modalView = true;
         reconstructSearchParamsFromUrl(newParams)
@@ -159,7 +149,6 @@ async function CurrentAdPage({ params, searchParams }: PageProps) {
             let new_value = Number(search.listId) + 1;
             newParams.listId = new_value;
         }
-        // console.log("snapshot:", JSON.parse(JSON.stringify(newParams)));
         delete newParams.action;
         delete newParams.modalView;
         reconstructSearchParamsFromUrl(newParams);

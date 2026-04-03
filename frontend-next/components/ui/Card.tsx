@@ -18,23 +18,6 @@ interface CardProps {
 
 const Card = ({ card, id, totalItems, params }: CardProps) => {
 
-    //const { idPage, setIdPage } = useContext(FilterAndSortContext);
-
-    //const navigate = useNavigate();
-
-    //console.log("id: ", id)
-
-    /*   const handleClick = (e) => {
-           e.preventDefault();
-           //console.log("id: ", id)
-           setIdPage(id);
-   
-           navigate(`/item/${Number(props.id)}`);
-       }*/
-
-    //console.log(props)
-
-    //console.log(card)
     const paramsCurrentAd: ICurrentPageParamsFull = {
         ...params,
         totalItems: totalItems,
@@ -42,10 +25,8 @@ const Card = ({ card, id, totalItems, params }: CardProps) => {
     }
 
     function getCurrentCardUrl() {
-        //console.log("params before parsing: ", paramsCurrentAd)
         const url_params_currend_ad: URLSearchParams = makeUrlCurrentPageParams(paramsCurrentAd);
         const url_params_search: URLSearchParams = makeUrlSearchParamsNoDefault(paramsCurrentAd);
-       // console.log("card to current - params SEARCH for url: ", url_params_search.toString(), "CURR for url: ", url_params_currend_ad.toString())
         const current_card_url: string = makeUrlFromParamsCombo([url_params_search.toString(), url_params_currend_ad.toString()], `/${card.id}`)
         return current_card_url
     }
@@ -73,8 +54,5 @@ const Card = ({ card, id, totalItems, params }: CardProps) => {
         </div>
     )
 }
-
-// todo добавить в конец
-//<Link to={`/item/${Number(props.id)}`} onClick={(e) => handleClick(e)} className={cl.panel_btn}>Открыть</Link>
 
 export default Card;
