@@ -6,7 +6,7 @@
 ~~1.   Старая версия (js, React)~~  
 ~~- В командной строке переместиться в папку frontend~~
 ~~- npm start~~  
-    Новая версия (ts, React, Next)  
+    Новая версия (ts, React, Next)
 - В командной строке переместиться в папку frontend-next
 - npm run dev
 
