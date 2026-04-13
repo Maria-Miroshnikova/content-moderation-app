@@ -9,7 +9,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { ISearchParams } from "../types/server_types";
 import { parseSearchParams } from "../utils/mapServerResponseOrUrlParamsToLocalInterfaces";
 import { makeUrlFromParamsCombo, makeUrlSearchParamsNoDefault, setFilterParams } from "../utils/makeUrlParamsFromLocalInterfaces";
-import { Button, Checkbox, Container, FormControl, FormControlLabel, MenuItem, RadioGroup, Select, TextField, Typography } from "@mui/material";
+import { Box, Button, Checkbox, Container, FormControl, FormControlLabel, MenuItem, RadioGroup, Select, TextField, Typography } from "@mui/material";
 
 interface CardsFilterFormProps {
     filter: IFilter;
@@ -57,78 +57,89 @@ const CardsFilterForm: FC<CardsFilterFormProps> = ({ filter }) => {
 
     return (
         <Container>
-            <Typography variant="h5">Фильтры поиска</Typography>
+            <Box sx={{display: "flex", justifyContent: "center"}}>
+                <Typography variant="h5">Фильтры поиска</Typography>
+            </Box>
 
-            <Typography variant="h6">Статус</Typography>
-            <FormControl>
-                <FormControlLabel
-                    control={<Checkbox
-                        checked={filter.status_inprocess}
-                        id="status_inprocess"
-                        onChange={e => handleFilterChange({ ...filter, status_inprocess: e.target.checked })}
-                    />}
-                    label={"На модерации"}
-                />
-            </FormControl>
-            <FormControl>
-                <FormControlLabel
-                    control={<Checkbox
-                        checked={filter.status_accepted}
-                        id="status_accepted"
-                        onChange={e => handleFilterChange({ ...filter, status_accepted: e.target.checked })}
-                    />}
-                    label={"Одобрено"}
-                />
-            </FormControl>
-            <FormControl>
-                <FormControlLabel
-                    control={<Checkbox
-                        checked={filter.status_declined}
-                        id="status_declined"
-                        onChange={e => handleFilterChange({ ...filter, status_declined: e.target.checked })}
-                    />}
-                    label={"Отклонено"}
-                />
-            </FormControl>
+            <Box>
+                <Typography variant="h6">Статус</Typography>
+                <FormControl>
+                    <FormControlLabel
+                        control={<Checkbox
+                            checked={filter.status_inprocess}
+                            id="status_inprocess"
+                            onChange={e => handleFilterChange({ ...filter, status_inprocess: e.target.checked })}
+                        />}
+                        label={"На модерации"}
+                    />
+                </FormControl>
+                <FormControl>
+                    <FormControlLabel
+                        control={<Checkbox
+                            checked={filter.status_accepted}
+                            id="status_accepted"
+                            onChange={e => handleFilterChange({ ...filter, status_accepted: e.target.checked })}
+                        />}
+                        label={"Одобрено"}
+                    />
+                </FormControl>
+                <FormControl>
+                    <FormControlLabel
+                        control={<Checkbox
+                            checked={filter.status_declined}
+                            id="status_declined"
+                            onChange={e => handleFilterChange({ ...filter, status_declined: e.target.checked })}
+                        />}
+                        label={"Отклонено"}
+                    />
+                </FormControl>
+            </Box>
 
-            <Typography variant="h6">Категория:</Typography>
-            <Select
-                value={filter.category}
-                onChange={e => handleFilterChange({ ...filter, category: Number(e.target.value) })}
-                size="small"
-            >
-                {Object.entries(CATEGORY_META).map(([id, title]) =>
-                (<MenuItem key={id} value={id}>
-                    {Number(id) === ECategory.DEFAULT ? <em>{title}</em> : title}
-                </MenuItem>))}
-            </Select>
+            <Box sx={{ mb: 2 }}>
+                <Typography variant="h6" sx={{ mb: 1 }}>Категория:</Typography>
+                <Select
+                    value={filter.category}
+                    onChange={e => handleFilterChange({ ...filter, category: Number(e.target.value) })}
+                    size="small"
+                    fullWidth
+                >
+                    {Object.entries(CATEGORY_META).map(([id, title]) =>
+                    (<MenuItem key={id} value={id}>
+                        {Number(id) === ECategory.DEFAULT ? <em>{title}</em> : title}
+                    </MenuItem>))}
+                </Select>
+            </Box>
 
-            <Typography variant="h6">Диапазон цен:</Typography>
-            <div>
-                <TextField label='oт'
-                    type='number'
-                    value={localCostMin}
-                    onChange={e => setLocalCostMin(Number(e.target.value))}
+            <Box sx={{ mb: 2 }}>
+                <Typography variant="h6" sx={{ mb: 1 }}>Диапазон цен:</Typography>
+                <Box sx={{ mb: 2, display: "flex", gap: 2 }}>
+                    <TextField label='oт'
+                        type='number'
+                        value={localCostMin}
+                        onChange={e => setLocalCostMin(Number(e.target.value))}
+                        size="small"
+                        fullWidth
+                    />
+                    <TextField label='до'
+                        type='number'
+                        value={localCostMax}
+                        onChange={e => setLocalCostMax(Number(e.target.value))}
+                        size="small"
+                        fullWidth
+                    />
+                </Box>
+                <TextField label='Искать в названии...'
+                    value={localSearch}
+                    onChange={e => setLocalSearch(e.target.value)}
+                    type='search'
+                    fullWidth
                     size="small"
                 />
-                <TextField label='до'
-                    type='number'
-                    value={localCostMax}
-                    onChange={e => setLocalCostMax(Number(e.target.value))}
-                    size="small"
-                />
-            </div>
-
-            <TextField label='Искать в названии...'
-                value={localSearch}
-                onChange={e => setLocalSearch(e.target.value)}
-                type='search'
-                fullWidth
-                size="small"
-            />
-
-            <Button sx={{}} variant="outlined" className={cl.panel_btn} onClick={e => resetFilter(e)}>Сбросить фильтр</Button>
-        </Container>
+            </Box>
+            <Box sx={{ mb: 2, display: "flex" }}>
+                <Button sx={{ marginLeft: "auto" }} variant="outlined" className={cl.panel_btn} onClick={e => resetFilter(e)}>Сбросить фильтр</Button>
+            </Box>
+        </Container >
     )
 }
 

@@ -5,7 +5,7 @@ import LinkButton from './LinkButton';
 
 const NavBar = () => {
     return (
-        <AppBar position='static'>
+        <AppBar position='sticky'>
             <Container maxWidth="xl">
                 <Toolbar>
                     <Box sx={{ gap: 2, height: 64, flexDirection: 'row', display: 'flex' }}>

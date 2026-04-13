@@ -7,7 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { ISearchParams } from "../types/server_types";
 import { parseSearchParams } from "../utils/mapServerResponseOrUrlParamsToLocalInterfaces";
 import { makeUrlFromParamsCombo, makeUrlSearchParamsNoDefault, setSortParams } from "../utils/makeUrlParamsFromLocalInterfaces";
-import { Container, MenuItem, Select, Typography } from "@mui/material";
+import { Checkbox, Container, FormControl, FormControlLabel, MenuItem, Select, Typography } from "@mui/material";
 
 interface CardsSortFormProps {
     sortSettings: ISort
@@ -32,31 +32,34 @@ const CardsSortForm: FC<CardsSortFormProps> = ({ sortSettings }) => {
     }
 
     return (
-        <Container>
-            <Typography variant="h6">Сортировка:</Typography>
-            <div className="sort">
-                <Select label="Сортировать по..."
-                    value={sortSettings.type}
-                    onChange={e => handleSortChange({ ...sortSettings, type: Number(e.target.value) })}
-                    size="small"
-                >
-                    {Object.entries(SORT_META).map(([id, meta]) =>
-                        <MenuItem key={id} value={id}>
-                            {Number(id) === ESort.DEFAULT ? <em>{meta.title}</em> : meta.title}
-                        </MenuItem>)}
-                </Select>
+        <Container sx={{ display: "flex", flexDirection: "column" }}>
+            <Typography variant="h6" sx={{ mb: 1 }}>Сортировка:</Typography>
 
-                {[ESort.DATE, ESort.COST].includes(sortSettings.type) && (
-                    <div className='checkbox'>
-                        <input type="checkbox"
-                            id="sort_up"
+            <Select label="Сортировать по..."
+                value={sortSettings.type}
+                onChange={e => handleSortChange({ ...sortSettings, type: Number(e.target.value) })}
+                size="small"
+            >
+                {Object.entries(SORT_META).map(([id, meta]) =>
+                    <MenuItem key={id} value={id}>
+                        {Number(id) === ESort.DEFAULT ? <em>{meta.title}</em> : meta.title}
+                    </MenuItem>)}
+            </Select>
+
+            {[ESort.DATE, ESort.COST].includes(sortSettings.type) && (
+                <FormControl>
+                    <FormControlLabel
+                        control={<Checkbox
                             checked={sortSettings.sort_up}
+                            id="sort_up"
                             onChange={e => handleSortChange({ ...sortSettings, sort_up: e.target.checked })}
-                        />
-                        <label htmlFor="sort_up">По возрастанию</label>
-                    </div>
-                )}
-            </div>
+                        />}
+                        label={"По возрастанию"}
+                    />
+                </FormControl>
+
+            )}
+
         </Container>
     )
 }
