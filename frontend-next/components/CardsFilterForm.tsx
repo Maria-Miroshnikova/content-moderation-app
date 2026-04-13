@@ -4,11 +4,12 @@ import React, { FC, useEffect, useState } from "react";
 
 import cl from "../styles/Card.module.css"
 import { FILTER_DEFAULT, ICategory, IFilter, PAGE_DEFAULT } from "../types/local_types";
-import { CATEGORY_META } from "../types/enums";
+import { CATEGORY_META, ECategory } from "../types/enums";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ISearchParams } from "../types/server_types";
 import { parseSearchParams } from "../utils/mapServerResponseOrUrlParamsToLocalInterfaces";
 import { makeUrlFromParamsCombo, makeUrlSearchParamsNoDefault, setFilterParams } from "../utils/makeUrlParamsFromLocalInterfaces";
+import { Button, Checkbox, Container, FormControl, FormControlLabel, MenuItem, RadioGroup, Select, TextField, Typography } from "@mui/material";
 
 interface CardsFilterFormProps {
     filter: IFilter;
@@ -55,65 +56,79 @@ const CardsFilterForm: FC<CardsFilterFormProps> = ({ filter }) => {
     }
 
     return (
-        <div className="filter">
-            <p>Фильтры поиска:</p>
+        <Container>
+            <Typography variant="h5">Фильтры поиска</Typography>
 
-            <p>Статус:</p>
-            <div className='checkbox'>
-                <input type="checkbox"
-                    id="status_inprocess"
-                    checked={filter.status_inprocess}
-                    onChange={e => handleFilterChange({ ...filter, status_inprocess: e.target.checked })}
+            <Typography variant="h6">Статус</Typography>
+            <FormControl>
+                <FormControlLabel
+                    control={<Checkbox
+                        checked={filter.status_inprocess}
+                        id="status_inprocess"
+                        onChange={e => handleFilterChange({ ...filter, status_inprocess: e.target.checked })}
+                    />}
+                    label={"На модерации"}
                 />
-                <label htmlFor="status_inprocess">На модерации</label>
-            </div>
-            <div className='checkbox'>
-                <input type="checkbox"
-                    id="status_accepted"
-                    checked={filter.status_accepted}
-                    onChange={e => handleFilterChange({ ...filter, status_accepted: e.target.checked })}
+            </FormControl>
+            <FormControl>
+                <FormControlLabel
+                    control={<Checkbox
+                        checked={filter.status_accepted}
+                        id="status_accepted"
+                        onChange={e => handleFilterChange({ ...filter, status_accepted: e.target.checked })}
+                    />}
+                    label={"Одобрено"}
                 />
-                <label htmlFor="status_accepted">Одобрено</label>
-            </div>
-            <div className='checkbox'>
-                <input type="checkbox"
-                    id="status_declined"
-                    checked={filter.status_declined}
-                    onChange={e => handleFilterChange({ ...filter, status_declined: e.target.checked })}
+            </FormControl>
+            <FormControl>
+                <FormControlLabel
+                    control={<Checkbox
+                        checked={filter.status_declined}
+                        id="status_declined"
+                        onChange={e => handleFilterChange({ ...filter, status_declined: e.target.checked })}
+                    />}
+                    label={"Отклонено"}
                 />
-                <label htmlFor="status_declined">Отклонено</label>
-            </div>
+            </FormControl>
 
-            <p>Категория:</p>
-            <select
+            <Typography variant="h6">Категория:</Typography>
+            <Select
                 value={filter.category}
                 onChange={e => handleFilterChange({ ...filter, category: Number(e.target.value) })}
+                size="small"
             >
-                {Object.entries(CATEGORY_META).map(([id, title]) => (<option key={id} value={id}>{title}</option>))}
-            </select>
+                {Object.entries(CATEGORY_META).map(([id, title]) =>
+                (<MenuItem key={id} value={id}>
+                    {Number(id) === ECategory.DEFAULT ? <em>{title}</em> : title}
+                </MenuItem>))}
+            </Select>
 
-            <p>Диапазон цен:</p>
+            <Typography variant="h6">Диапазон цен:</Typography>
             <div>
-                <input type='number'
-                    placeholder='oт'
+                <TextField label='oт'
+                    type='number'
                     value={localCostMin}
                     onChange={e => setLocalCostMin(Number(e.target.value))}
+                    size="small"
                 />
-                <input type='number'
-                    placeholder='до'
+                <TextField label='до'
+                    type='number'
                     value={localCostMax}
                     onChange={e => setLocalCostMax(Number(e.target.value))}
+                    size="small"
                 />
             </div>
 
-            <input placeholder='Искать в названии...'
+            <TextField label='Искать в названии...'
                 value={localSearch}
                 onChange={e => setLocalSearch(e.target.value)}
-                type='text'
+                type='search'
+                fullWidth
+                size="small"
             />
 
-            <button className={cl.panel_btn} onClick={e => resetFilter(e)}>Сбросить фильтр</button>
-        </div>
+            <Button sx={{}} variant="outlined" className={cl.panel_btn} onClick={e => resetFilter(e)}>Сбросить фильтр</Button>
+        </Container>
     )
 }
 

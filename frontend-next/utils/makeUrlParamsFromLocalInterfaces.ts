@@ -179,6 +179,7 @@ export function setFilterParams(params: ISearchParams, filter: IFilter) {
 
 
 export function setSortParams(params: ISearchParams, sort: ISort) {
+    console.log("before upd params: ", sort, params)
     if (sort.type === ESort.COST) {
         params.sortBy = SORT_META[sort.type].server
         if (sort.sort_up === true)
@@ -197,6 +198,10 @@ export function setSortParams(params: ISearchParams, sort: ISort) {
         params.sortBy = SORT_META[sort.type].server;
         delete params.sortOrder;
         // params.sortOrder = ESortDirection.DOWN
+    }
+    else {
+        delete params.sortOrder;
+        delete params.sortBy;
     }
     //console.log("params after setSort: ", params)
 }
