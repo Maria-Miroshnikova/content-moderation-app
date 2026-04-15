@@ -23,15 +23,17 @@ async function AdsPage({ searchParams }: { searchParams: ISearchParams }) {
     const states: IStates = mapISearchParamsToStates(params);
 
     return (
-        <Box sx={{ background: "#f5f5f5" }}>
+        <Box sx={{ background: "#f5f5f5", paddingBottom: 4 }}>
             <Container sx={{
                 width: "80%",
                 mx: "auto"
             }}>
-                <Form>
-                    <CardsFilterForm filter={states.filter} />
-                    <CardsSortForm sortSettings={states.sort} />
-                </Form>
+                <Container>
+                    <Form>
+                        <CardsFilterForm filter={states.filter} />
+                        <CardsSortForm sortSettings={states.sort} />
+                    </Form>
+                </Container>
                 <CardList cards={adsResponse.cards} page={states.page} limit={states.limit} totalItems={adsResponse.pagination.totalItems} params={params} />
                 <PaginationBar totalPages={adsResponse.pagination.totalPages} totalItems={adsResponse.pagination.totalItems} page={states.page} />
             </Container>
@@ -43,6 +45,7 @@ export default AdsPage;
 
 async function getAds(params: ISearchParams) {
     const url = `http://localhost:3001/api/v1/ads`
+    //console.log("params from reconstruct", params)
     const url_params: URLSearchParams = makeUrlSearchParamsForServer(params)
     const url_with_params: string = makeUrlFromParamsCombo(url_params.toString(), url)
 

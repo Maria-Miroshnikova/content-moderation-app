@@ -1,7 +1,7 @@
 import { ReadonlyURLSearchParams } from "next/navigation";
 import { ECategory, EPriority, ESort, ESortDirection, EStatus, PRIORITY_BY_SERVER_TITLE, SORT_META, STATUS_BY_SERVER_TITLE, STATUS_META } from "../types/enums";
 import { getDefaultSearchParams, IAd, ICurrentPageParams, ISearchParams, SEARCHPARAMS_DEFAILT } from "../types/server_types";
-import { FILTER_DEFAULT, ICard, IFilter, ISort, IStates, SORT_DEFAULT, STATES_DEFAULT } from "../types/local_types";
+import { FILTER_DEFAULT, ICard, IFilter, ISort, IStates, LIMIT_DEFAULT, PAGE_DEFAULT, SORT_DEFAULT, STATES_DEFAULT } from "../types/local_types";
 import { reconstructSearchParamsFromUrl } from "./makeUrlParamsFromLocalInterfaces";
 
 export function mapAdToCard(ad: IAd): ICard {
@@ -42,8 +42,8 @@ export function mapISearchParamsToStates(params: ISearchParams) {
         sort_up: params.sortOrder ? params.sortOrder.includes(ESortDirection.UP) : SORT_DEFAULT.sort_up
     }
 
-    let limit: number = Number(params.limit ?? 10);
-    let page: number = Number(params.page ?? 1);
+    let limit: number = Number(params.limit ?? LIMIT_DEFAULT);
+    let page: number = Number(params.page ?? PAGE_DEFAULT);
 
     let states: IStates = {
         filter: filter,
@@ -51,7 +51,7 @@ export function mapISearchParamsToStates(params: ISearchParams) {
         limit: limit,
         page: page
     }
-
+   // console.log(states)
     return states;
 }
 

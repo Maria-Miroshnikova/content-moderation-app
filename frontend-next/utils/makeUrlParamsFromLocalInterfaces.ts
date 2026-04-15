@@ -1,6 +1,6 @@
 import { ECategory, ESort, ESortDirection, EStatus, SORT_META, STATUS_META } from "../types/enums";
 import { getDefaultStatisticsPageParams, ICurrentPageParams, ISearchParams, IStatisticsPageParams, SEARCHPARAMS_DEFAILT } from "../types/server_types"
-import { IFilter, ISort } from "../types/local_types";
+import { IFilter, ISort, LIMIT_DEFAULT, PAGE_DEFAULT } from "../types/local_types";
 import { ICurrentPageParamsFull } from "../app/[id]/page";
 
 /*export function makeUrlSearchParamsForServer(params: ISearchParams) {
@@ -19,6 +19,7 @@ import { ICurrentPageParamsFull } from "../app/[id]/page";
 
 export function makeUrlSearchParamsForServer(params: ISearchParams) {
     const searchParams = new URLSearchParams()
+
     keys.forEach((key) => {
         if (params[key] !== undefined && params[key] !== null) {
             if (Array.isArray(params[key])) {
@@ -28,6 +29,13 @@ export function makeUrlSearchParamsForServer(params: ISearchParams) {
             }
         }
     })
+
+    if (!searchParams.has("limit"))
+        searchParams.append("limit", LIMIT_DEFAULT.toString())
+    if (!searchParams.has("page"))
+        searchParams.append("page", PAGE_DEFAULT.toString())
+
+   // console.log("cerver params: ", params)
     return searchParams
 }
 
@@ -179,7 +187,7 @@ export function setFilterParams(params: ISearchParams, filter: IFilter) {
 
 
 export function setSortParams(params: ISearchParams, sort: ISort) {
-    console.log("before upd params: ", sort, params)
+  //  console.log("before upd params: ", sort, params)
     if (sort.type === ESort.COST) {
         params.sortBy = SORT_META[sort.type].server
         if (sort.sort_up === true)
@@ -241,5 +249,5 @@ export function makeStatisticsPageParamsDefault(params: IStatisticsPageParams) {
     if (params.period == undefined || params.period == null)
         params.period = getDefaultStatisticsPageParams().period
     else
-        params.period = Number(params.period) 
+        params.period = Number(params.period)
 }

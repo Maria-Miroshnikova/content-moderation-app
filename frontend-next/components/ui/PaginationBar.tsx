@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { parseSearchParams } from "../../utils/mapServerResponseOrUrlParamsToLocalInterfaces";
 import { ISearchParams } from "../../types/server_types";
 import { makeUrlFromParamsCombo, makeUrlSearchParamsNoDefault } from "../../utils/makeUrlParamsFromLocalInterfaces";
+import { Box, Pagination, Typography } from "@mui/material";
 
 interface PaginationBarProps {
     totalPages: number,
@@ -27,7 +28,7 @@ const PaginationBar = ({ totalPages, totalItems, page }: PaginationBarProps) => 
         return arr
     }, [totalPages])
 
-    function handlePageChange(i: number) {
+    function handlePageChange(event: React.ChangeEvent<unknown>, i: number) {
         let params: ISearchParams = parseSearchParams(searchParams);
         params.page = i.toString();
         let url_params: URLSearchParams = makeUrlSearchParamsNoDefault(params)
@@ -36,21 +37,10 @@ const PaginationBar = ({ totalPages, totalItems, page }: PaginationBarProps) => 
     }
 
     return (
-        <div className={cl.pagination_layout}>
-            <div className={cl.paginationBar}>
-                {pageArray.map((i) => {
-                    return <button key={i}
-                        className={
-                            i === page
-                                ? [cl.pagination_btn_current, cl.pagination_btn].join(' ')
-                                : cl.pagination_btn
-                        }
-                        onClick={(e) => { handlePageChange(i) }}
-                    >{i}</button>
-                })}
-            </div>
-            <p className={cl.cards_count_p}>Всего объявлений {totalItems}</p>
-        </div>
+        <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column', mt: 8, gap: 0.5 }}>
+            <Pagination count={totalPages} page={page} onChange={handlePageChange} size="large"/>
+            <Typography variant="body2">Всего объявлений {totalItems}</Typography>
+        </Box>
     )
 }
 
