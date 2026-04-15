@@ -10,7 +10,7 @@ interface LinkButtonProps {
 
 const LinkButton = ({path, label} : LinkButtonProps) => {
     return (
-        <Button component={Link} href={path} sx={{ my: 2, color: 'inherit', display: 'block' }}>
+        <Button component={Link} href={path} sx={{ my: 2, color: 'inherit'}}>
             {label}
         </Button>
     )
