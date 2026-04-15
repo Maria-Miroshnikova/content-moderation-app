@@ -74,7 +74,7 @@ const CardMy = ({ card, id, totalItems, params }: CardProps) => {
 
     // TODO: next умеет лучше отрисовывать картинки!!!
     return (
-        <Card sx={{ display: 'flex', flexDirection: "column" }}>
+        <Card sx={{ display: 'flex', flexDirection: "column"}}>
             <CardMedia
                 component={"img"}
                 image={card.img}
@@ -86,9 +86,9 @@ const CardMy = ({ card, id, totalItems, params }: CardProps) => {
             />
             <CardContent sx={{
                 display: 'flex',
-                flexDirection: 'column'
+                flexDirection: 'column',
             }}>
-                <Box sx={{ mb: 2, display: 'flex', flexDirection: "column", gap: 1 }}>
+                <Box sx={{ mb: 2, display: 'flex', flexDirection: "column", gap: 1}}>
                     <Typography
                         component={Link}
                         href={getCurrentCardUrl()}
@@ -109,7 +109,7 @@ const CardMy = ({ card, id, totalItems, params }: CardProps) => {
                     <Typography variant="h6" sx={{ fontWeight: 700 }}>{getPrice(card.cost)}</Typography>
                 </Box>
 
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 1}}>
                     <Typography color="info">{getDate(card.date)}</Typography>
                     <Box sx={{ display: "flex", gap: 1, flexWrap: 'wrap', }}>
                         <Chip label={STATUS_META[card.status].title} color={getStatusColor(card.status)} />

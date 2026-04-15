@@ -9,8 +9,9 @@ import { mapAdToCard, mapISearchParamsToStates } from '../utils/mapServerRespons
 import { makeUrlSearchParamsForServer, makeUrlFromParamsCombo, reconstructSearchParamsFromUrl, makeUrlCurrentPageParams, makeUrlSearchParamsNoDefault } from '../utils/makeUrlParamsFromLocalInterfaces';
 import PaginationBar from '../components/ui/PaginationBar';
 import { ICurrentPageParamsFull } from './[id]/page';
-import Form from '../components/Form';
+import Form from '../components/ui/Form';
 import { Box, Container, Grid } from '@mui/material';
+import FilterAndSortForm from '../components/FilterAndSortForm';
 
 
 async function AdsPage({ searchParams }: { searchParams: ISearchParams }) {
@@ -28,11 +29,8 @@ async function AdsPage({ searchParams }: { searchParams: ISearchParams }) {
                 width: "80%",
                 mx: "auto"
             }}>
-                <Container>
-                    <Form>
-                        <CardsFilterForm filter={states.filter} />
-                        <CardsSortForm sortSettings={states.sort} />
-                    </Form>
+                <Container sx={{ mb: 4, background: "#e3f2fd", padding: 4 }}>
+                    <CardsFilterForm filter={states.filter} sortSettings={states.sort}/>
                 </Container>
                 <CardList cards={adsResponse.cards} page={states.page} limit={states.limit} totalItems={adsResponse.pagination.totalItems} params={params} />
                 <PaginationBar totalPages={adsResponse.pagination.totalPages} totalItems={adsResponse.pagination.totalItems} page={states.page} />
