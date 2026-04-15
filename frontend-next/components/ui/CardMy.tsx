@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useContext } from "react";
 import cl from "../../styles/Card.module.css"
 import { ICard, IFilter, ISort } from "../../types/local_types";
@@ -87,7 +89,22 @@ const CardMy = ({ card, id, totalItems, params }: CardProps) => {
                 flexDirection: 'column'
             }}>
                 <Box sx={{ mb: 2, display: 'flex', flexDirection: "column", gap: 1 }}>
-                    <Typography variant="h6">{card.title}</Typography>
+                    <Typography
+                        component={Link}
+                        href={getCurrentCardUrl()}
+                        variant="h6"
+                        sx={{
+                            cursor: 'pointer',
+                            textDecoration: 'none',
+                            color: 'inherit',
+                            transition: '0.2s',
+                            '&:hover': {
+                                color: 'red'
+                            }
+                        }}
+                    >
+                        {card.title}
+                    </Typography>
                     <Chip label={card.categoryName} variant="outlined" sx={{ alignSelf: 'flex-start' }} />
                     <Typography variant="h6" sx={{ fontWeight: 700 }}>{getPrice(card.cost)}</Typography>
                 </Box>
@@ -100,9 +117,6 @@ const CardMy = ({ card, id, totalItems, params }: CardProps) => {
                     </Box>
                 </Box>
             </CardContent>
-            <CardActions>
-                <LinkButton path={getCurrentCardUrl()} label="посмотреть" />
-            </CardActions>
         </Card>
     )
 }
