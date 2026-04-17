@@ -2,12 +2,13 @@
 import Link from 'next/link';
 import cl from '../../styles/StatisticsPage.module.css';
 import { EPeriod, PERIOD_META, PERMISSIONS_META } from '../../types/enums';
-import { getDefaultStatisticsPageParams, IActivityItemStats, IActivityResponse, ICategoriesStats, IDecisionStats, IModeratorInfoResponse, IStatisticsPageParams, IStatisticsResponse } from '../../types/server_types';
+import { getDefaultStatisticsPageParams, IActivityItemStats, ICategoriesStats, IDecisionStats, IModeratorInfoResponse, IStatisticsPageParams, IStatisticsResponse } from '../../types/server_types';
 import { makeStatisticsPageParamsDefault, makeURLSearchParamsFromPageSearchParams } from '../../utils/makeUrlParamsFromLocalInterfaces';
-import BarChart from '../../components/ui/BarChart';
 import PieChart from '../../components/ui/PieChart';
 import { Box, Chip, Container, Grid, Paper, Tab, Tabs, Typography } from '@mui/material';
 import LinkTab from '../../components/ui/LinkTab';
+
+import ChartCard from '../../components/ui/ChardCard';
 
 interface StatisticsPageProps {
     searchParams: IStatisticsPageParams
@@ -121,45 +122,35 @@ async function StatisticsPage({ searchParams }: StatisticsPageProps) {
                     </Box>
                 </Grid>
 
-
-
                 <Grid>
-                    <Paper sx={{ padding: 4 }}>
-                        <BarChart
-                            labels={activityInfo.map((g) => getFormatDateDM(g.date))}
-                            values={activityInfo.map((g) => (g.rejected + g.approved + g.requestChanges))}
-                            period={params.period}
-                            label={"Количество обработанных объявлений"}
-                        />
-                    </Paper>
+                    <ChartCard
+                        xAxisValues={activityInfo.map((g) => getFormatDateDM(g.date))}
+                        seriesValues={activityInfo.map((g) => (g.rejected + g.approved + g.requestChanges))}
+                        yLabel='обработано объявлений за день'
+                        title={`Активность ${PERIOD_META[params.period].title}`}
+                        color={'#90caf9'}
+                    />
                 </Grid>
-
                 <Grid>
-                    <Paper sx={{ padding: 4 }}>
-                        <Box sx={{ display: 'flex' }}>
-                            <PieChart
-                                approved={decisionInfo.approved}
-                                rejected={decisionInfo.rejected}
-                                requestChanges={decisionInfo.requestChanges}
-                            />
-                            <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                                <p>Одобрено: {Number(decisionInfo.approved.toFixed(1))}%</p>
-                                <p>Отклонено: {Number(decisionInfo.rejected.toFixed(1))}%</p>
-                                <p>Возвращено: {Number(decisionInfo.requestChanges.toFixed(1))}%</p>
-                            </div>
-                        </Box>
-                    </Paper>
+                    <ChartCard
+                        xAxisValues={Object.entries(categoriesInfo).map((i) => i[0])}
+                        seriesValues={Object.entries(categoriesInfo).map((i) => i[1])}
+                        yLabel='обработано объявлений в категории'
+                        title={'Активность по категориям'}
+                    />
                 </Grid>
-
                 <Grid>
-                    <Paper sx={{ padding: 4 }}>
-                        <BarChart
-                            labels={Object.entries(categoriesInfo).map((i) => i[0])}
-                            values={Object.entries(categoriesInfo).map((i) => i[1])}
-                            period={params.period}
-                            label={"Количество обработанных объявлений в категории"}
-                        />
-                    </Paper>
+                    <ChartCard
+                        isPie={true}
+                        title={'Принятые решения'}
+                        pieData={
+                            [
+                                {id: 0, value: decisionInfo.approved, label: "одобрено"},
+                                {id: 1, value: decisionInfo.rejected, label: "отклонено"},
+                                {id: 2, value: decisionInfo.requestChanges, label: "возвращено"}
+                            ]
+                        }
+                    />
                 </Grid>
             </Grid>
 
