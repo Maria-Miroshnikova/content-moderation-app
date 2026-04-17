@@ -3,6 +3,7 @@ import NavBar from '../components/ui/NavBar';
 import { FilterAndSortProvider } from '../context/index';
 import '../styles/global.css';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
+import { Box } from '@mui/material';
 
 /*export default function App({ Component, pageProps }) {
     return (
@@ -24,7 +25,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <AppRouterCacheProvider>
                     <FilterAndSortProvider>
                         <NavBar />
-                        {children}
+                        <Box sx={{ background: "#f5f5f5"}}>
+                            {children}
+                        </Box>
                     </FilterAndSortProvider>
                 </AppRouterCacheProvider>
             </body>

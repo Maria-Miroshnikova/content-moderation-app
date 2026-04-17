@@ -6,6 +6,8 @@ import { getDefaultStatisticsPageParams, IActivityItemStats, IActivityResponse, 
 import { makeStatisticsPageParamsDefault, makeURLSearchParamsFromPageSearchParams } from '../../utils/makeUrlParamsFromLocalInterfaces';
 import BarChart from '../../components/ui/BarChart';
 import PieChart from '../../components/ui/PieChart';
+import { Box, Chip, Container, Paper, Tab, Tabs, Typography } from '@mui/material';
+import LinkTab from '../../components/ui/LinkTab';
 
 interface StatisticsPageProps {
     searchParams: IStatisticsPageParams
@@ -54,53 +56,36 @@ async function StatisticsPage({ searchParams }: StatisticsPageProps) {
     };
 
     return (
-        <div className={cl.stats_page_layout}>
+        <Container sx={{background: "white", display:'flex', flexDirection: 'column', gap: 2, paddingTop: 4, paddingBottom: 6}}>
+            <Paper sx={{padding: 4, display: "flex", flexDirection: "column", gap: 2}} variant='outlined'>
+                <Typography variant='h5'>Данные модератора</Typography>
+                <Box sx={{ display: "flex", gap: 2 }}>
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                        <Typography variant='body1' color="info">Имя</Typography>
+                        <Typography variant='body1' color="info">Почта</Typography>
+                        <Typography variant='body1' color="info">Должность</Typography>
+                        <Typography variant='body1' color="info">Доступные действия</Typography>
+                    </Box>
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                        <Typography variant='body1'>{moderInfo.name}</Typography>
+                        <Typography variant='body1'>{moderInfo.email}</Typography>
+                        <Typography variant='body1'>{moderInfo.role}</Typography>
+                        <Box sx={{display: "flex", gap: 1}}>
+                            {(moderInfo.permissions.map((p, id) =>
+                                <Chip key={id} label={PERMISSIONS_META[p]} variant='outlined' color="info" sx={{background: "white"}}/>
+                            ))}
+                        </Box>
+                    </Box>
+                </Box>
+            </Paper>
 
-            <div className={cl.moder_panel}>
-                <p><b>Данные модератора</b></p>
-                <div style={{ display: "flex", gap: "20px" }}>
-                    <div style={{ display: "flex", flexDirection: "column" }}>
-                        <p>Имя:</p>
-                        <p>Почта:</p>
-                        <p>Должность:</p>
-                        <p>Доступные действия:</p>
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column" }}>
-                        <p>{moderInfo.name}</p>
-                        <p>{moderInfo.email}</p>
-                        <p>{moderInfo.role}</p>
-                        <p>{(moderInfo.permissions.map(p => PERMISSIONS_META[p])).join(", ")}</p>
-                    </div>
-                </div>
-            </div>
-
-            <div className={cl.period_panel}>
-                <p>Период: </p>
-                <div className={cl.period_btns_container}>
-                    <Link href={`/stats?${getUrlForPeriodButtons(EPeriod.TODAY)}`} className={
-                        params.period === EPeriod.TODAY
-                            ? [cl.btn_current, cl.btn].join(' ')
-                            : cl.btn
-                    }>
-                        {PERIOD_META[EPeriod.TODAY].title}
-                    </Link>
-                    <Link href={`/stats?${getUrlForPeriodButtons(EPeriod.WEEK)}`} className={
-                        params.period === EPeriod.WEEK
-                            ? [cl.btn_current, cl.btn].join(' ')
-                            : cl.btn
-                    }
-                    >{PERIOD_META[EPeriod.WEEK].title}
-                    </Link>
-                    <Link href={`/stats?${getUrlForPeriodButtons(EPeriod.MONTH)}`} className={
-                        params.period === EPeriod.MONTH
-                            ? [cl.btn_current, cl.btn].join(' ')
-                            : cl.btn
-                    }
-                    >{PERIOD_META[EPeriod.MONTH].title}
-                    </Link>
-
-                </div>
-            </div>
+            <Container sx={{mb: 2}}>
+                <Tabs value={params.period}>
+                    <LinkTab label={PERIOD_META[EPeriod.TODAY].title} path={`/stats?${getUrlForPeriodButtons(EPeriod.TODAY)}`} />
+                    <LinkTab label={PERIOD_META[EPeriod.WEEK].title} path={`/stats?${getUrlForPeriodButtons(EPeriod.WEEK)}`} />
+                    <LinkTab label={PERIOD_META[EPeriod.MONTH].title} path={`/stats?${getUrlForPeriodButtons(EPeriod.MONTH)}`} />
+                </Tabs>
+            </Container>
 
             <div className={cl.stats_layout}>
                 <div className={cl.stats_container}>
@@ -163,7 +148,7 @@ async function StatisticsPage({ searchParams }: StatisticsPageProps) {
                 />
             </div>
 
-        </div >
+        </Container >
     );
 }
 

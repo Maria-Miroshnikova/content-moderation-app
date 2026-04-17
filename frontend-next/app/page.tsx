@@ -10,7 +10,7 @@ import { makeUrlSearchParamsForServer, makeUrlFromParamsCombo, reconstructSearch
 import PaginationBar from '../components/ui/PaginationBar';
 import { ICurrentPageParamsFull } from './[id]/page';
 import Form from '../components/ui/Form';
-import { Box, Container, Grid } from '@mui/material';
+import { Box, Container, Grid, Paper } from '@mui/material';
 import FilterAndSortForm from '../components/FilterAndSortForm';
 
 
@@ -24,18 +24,16 @@ async function AdsPage({ searchParams }: { searchParams: ISearchParams }) {
     const states: IStates = mapISearchParamsToStates(params);
 
     return (
-        <Box sx={{ background: "#f5f5f5", paddingBottom: 4 }}>
-            <Container sx={{
-                width: "80%",
-                mx: "auto"
-            }}>
-                <Container sx={{ mb: 4, background: "#e3f2fd", padding: 4 }}>
-                    <CardsFilterForm filter={states.filter} sortSettings={states.sort}/>
-                </Container>
-                <CardList cards={adsResponse.cards} page={states.page} limit={states.limit} totalItems={adsResponse.pagination.totalItems} params={params} />
-                <PaginationBar totalPages={adsResponse.pagination.totalPages} totalItems={adsResponse.pagination.totalItems} page={states.page} />
-            </Container>
-        </Box>
+        <Container sx={{
+            width: "80%",
+            mx: "auto"
+        }}>
+            <Paper variant='outlined' sx={{ mb: 4, padding: 4 }}>
+                <CardsFilterForm filter={states.filter} sortSettings={states.sort} />
+            </Paper>
+            <CardList cards={adsResponse.cards} page={states.page} limit={states.limit} totalItems={adsResponse.pagination.totalItems} params={params} />
+            <PaginationBar totalPages={adsResponse.pagination.totalPages} totalItems={adsResponse.pagination.totalItems} page={states.page} />
+        </Container>
     );
 }
 

@@ -37,7 +37,7 @@ const PaginationBar = ({ totalPages, totalItems, page }: PaginationBarProps) => 
     }
 
     return (
-        <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column', mt: 8, gap: 0.5 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column', mt: 8, gap: 0.5, paddingBottom: 6  }}>
             <Pagination count={totalPages} page={page} onChange={handlePageChange} size="large"/>
             <Typography variant="body2">Всего объявлений {totalItems}</Typography>
         </Box>

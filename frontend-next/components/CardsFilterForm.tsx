@@ -88,7 +88,7 @@ const CardsFilterForm: FC<CardsFilterFormProps> = ({ filter, sortSettings }) => 
             </Box>
 
             <Box sx={{ display: "flex", gap: 2,  alignItems: "center", }}>
-                <Typography variant="h6">Статус:</Typography>
+                <Typography variant="h6">Статус</Typography>
                 <FormControlLabel
                     control={<Checkbox
                         checked={filter.status_inprocess}
@@ -117,7 +117,7 @@ const CardsFilterForm: FC<CardsFilterFormProps> = ({ filter, sortSettings }) => 
 
             <Box sx={{ display: "flex", gap: 8 }}>
                 <Box sx={{ display: "flex", flexDirection: "column", flex: 1}}>
-                    <Typography variant="h6" sx={{ mb: 1 }}>Категория:</Typography>
+                    <Typography variant="h6" sx={{ mb: 1 }}>Категория</Typography>
                     <Select
                         value={filter.category}
                         onChange={e => handleFilterChange({ ...filter, category: Number(e.target.value) })}
@@ -131,7 +131,7 @@ const CardsFilterForm: FC<CardsFilterFormProps> = ({ filter, sortSettings }) => 
                     </Select>
                 </Box>
                 <Box sx={{ display: "flex", flexDirection: "column", flex: 1 }}>
-                    <Typography variant="h6" sx={{ mb: 1 }}>Диапазон цен:</Typography>
+                    <Typography variant="h6" sx={{ mb: 1 }}>Диапазон цен</Typography>
                     <Box sx={{ mb: 2, display: "flex", gap: 2 }}>
                         <TextField label='oт'
                             type='number'
@@ -192,7 +192,7 @@ const CardsFilterForm: FC<CardsFilterFormProps> = ({ filter, sortSettings }) => 
                     <Button variant="outlined" onClick={(e) => resetSortAndFilter(e)}>Сбросить фильтр</Button>
                 </Box>
             </Box>
-        </Container >
+        </Container>
     )
 }
 
