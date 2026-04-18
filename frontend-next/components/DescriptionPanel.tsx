@@ -8,17 +8,10 @@ interface DescriptionPanelProps {
 }
 
 const DescriptionPanel = ({ data }: DescriptionPanelProps) => {
-
-
-
     return (
         <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
-            <Box sx={{ display: "flex", gap: 2 }}>
-                <Typography variant="h6">{data.seller.name}</Typography>
-                <Rating value={Number(data.seller.rating)} sx={{ alignSelf: "center" }} readOnly />
-            </Box>
-            <Typography color="textSecondary"> Объявлений: {data.seller.totalAds} | На сайте: {getFormattedDurationString(data.seller.registeredAt)}</Typography>
-            <Typography variant="h6" sx={{mt: 2}}>Характеристики</Typography>
+            <Typography variant="h5">{data.title}</Typography>
+            <Typography variant="h6" sx={{ mt: 2 }}>Характеристики</Typography>
             <table style={{ width: "fit-content" }}>
                 <tbody>
                     {Object.entries(data.characteristics).map((i, index) => {
@@ -39,8 +32,13 @@ const DescriptionPanel = ({ data }: DescriptionPanelProps) => {
                     })}
                 </tbody>
             </table>
-            <Typography variant="h6" color="in" sx={{mt: 2}}>Полное описание</Typography>
+            <Typography variant="h6" color="in" sx={{ mt: 2 }}>Полное описание</Typography>
             <Typography variant="body1">{data.description}</Typography>
+            <Box sx={{ display: "flex", gap: 2, mt: 2, justifyContent: "right" }}>
+                <Typography variant="body1" color="info">{data.seller.name}</Typography>
+                <Rating value={Number(data.seller.rating)} sx={{ alignSelf: "center" }} readOnly />
+            </Box>
+            <Typography color="textSecondary" variant="caption" sx={{ml: "auto"}}> Объявлений: {data.seller.totalAds} | На сайте: {getFormattedDurationString(data.seller.registeredAt)}</Typography>
         </Box>
     )
 }

@@ -25,9 +25,9 @@ function getDateString({ years, months, days }) {
     let arr_str = [];
     if (years > 0) {
         arr_str.push(years.toString())
-        if ((years % 10) <= 1)
+        if (((years % 10) == 1) && ((years % 100) != 11))
             arr_str.push("год")
-        else if ((years % 10) <= 4)
+        else if ((((years % 10) <= 4)) && (((years % 10) > 0)) && (((years % 100) < 10) || ((years % 100) > 14)))
             arr_str.push("года")
         else
             arr_str.push("лет")
@@ -35,9 +35,9 @@ function getDateString({ years, months, days }) {
 
     if (months > 0) {
         arr_str.push(months.toString())
-        if ((months % 10) <= 1)
+        if (((months % 10) == 1) && ((months % 100) != 11))
             arr_str.push("месяц")
-        else if ((months % 10) <= 4)
+        else if (((months % 10) <= 4) && ((months % 10) > 0) && (((months % 100) < 10) || ((months % 100) > 14)))
             arr_str.push("месяца")
         else
             arr_str.push("месяцев")
@@ -45,9 +45,9 @@ function getDateString({ years, months, days }) {
 
     if (days > 0) {
         arr_str.push(days.toString())
-        if ((days % 10) <= 1)
+        if (((days % 10) == 1) && ((days % 100) != 11))
             arr_str.push("день")
-        else if ((days % 10) <= 4)
+        else if (((days % 10) <= 4) && ((days % 10) > 0) && (((days % 100) < 10) || ((days % 100) > 14)))
             arr_str.push("дня")
         else
             arr_str.push("дней")
