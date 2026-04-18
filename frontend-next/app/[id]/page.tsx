@@ -199,9 +199,20 @@ async function CurrentAdPage({ params, searchParams }: PageProps) {
                     <RejectPanel params={search} actionType={STATUS_BY_SERVER_TITLE[search.action]} id={id} isVisible={search.modalView ?? false} rejectPost={rejectPost} draftPost={draftPost} />
                 </ModalView>
 
-                <Box sx={{ display: "flex", gap: 2 }}>
+                <LinkButton path={getAllAdsUrl()} label='К списку' sx={{ alignSelf: "flex-start" }} size='small' />
+                <Box sx={{ display: "flex", gap: 2, height: 300 }}>
                     <GalleryPanel images={adDetails.images} />
-                    <ModerationHistoryPanel history={adDetails.moderationHistory} />
+                    <Paper
+                        variant='outlined'
+                        sx={{
+                            overflowY: "auto",
+                            padding: 2,
+                            background: "#f5f5f5"
+                        }}
+                        
+                    >
+                        <ModerationHistoryPanel history={adDetails.moderationHistory} />
+                    </Paper>
                 </Box>
                 <Paper variant='outlined' sx={{ padding: 4 }}>
                     <DescriptionPanel data={adDetails} />
@@ -217,9 +228,6 @@ async function CurrentAdPage({ params, searchParams }: PageProps) {
                     <LinkButton path={getRejectionPanelUrl(EStatus.DECLINED)} label='Отклонить' variant='outlined' />
                     <LinkButton path={getRejectionPanelUrl(EStatus.DRAFT)} label='Доработка' variant='outlined' />
                 </Box>
-                <div className={cl.navigation_panel}>
-                    <Link href={getAllAdsUrl()}>К списку</Link>
-                </div>
             </Paper>
 
             <LinkIconButton url={getSideAdUrl(false)}

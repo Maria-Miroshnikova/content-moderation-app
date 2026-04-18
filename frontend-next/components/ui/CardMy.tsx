@@ -11,6 +11,8 @@ import { ICurrentPageParamsFull } from "../../app/[id]/page";
 import { Box, Card, CardActions, CardContent, CardMedia, Chip, Typography } from "@mui/material";
 import LinkButton from "./LinkButton";
 import { format } from "node:path";
+import { getFormattedDate, getFormattedPrice } from "../../utils/date_formatting";
+import { getPriorityColor, getStatusColor } from "../../utils/color_formatting";
 
 
 
@@ -34,42 +36,6 @@ const CardMy = ({ card, id, totalItems, params }: CardProps) => {
         const url_params_search: URLSearchParams = makeUrlSearchParamsNoDefault(paramsCurrentAd);
         const current_card_url: string = makeUrlFromParamsCombo([url_params_search.toString(), url_params_currend_ad.toString()], `/${card.id}`)
         return current_card_url
-    }
-
-    function getDate(date: string) {
-        const formatted = new Date(date).toLocaleString('ru-RU', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-        });
-        return formatted;
-    }
-
-    function getPrice(price: number) {
-        const formatted = price.toLocaleString('ru-RU', {
-            style: 'currency',
-            currency: 'RUB',
-            maximumFractionDigits: 0,
-        });
-        return formatted;
-    }
-
-    function getStatusColor(status: EStatus): string {
-        switch (status) {
-            case EStatus.INPROCESS: return "info"
-            case EStatus.ACCEPTED: return "success"
-            case EStatus.DECLINED: return "error"
-            case EStatus.DRAFT: return "warning"
-        }
-    }
-
-    function getPriorityColor(priority: EPriority): string {
-        switch (priority) {
-            case EPriority.HIGH: return "warning"
-            case EPriority.USUAL: return "info"
-        }
     }
 
     // TODO: next умеет лучше отрисовывать картинки!!!
@@ -106,11 +72,11 @@ const CardMy = ({ card, id, totalItems, params }: CardProps) => {
                         {card.title}
                     </Typography>
                     <Chip label={card.categoryName} variant="outlined" sx={{ alignSelf: 'flex-start' }} />
-                    <Typography variant="h6" sx={{ fontWeight: 700 }}>{getPrice(card.cost)}</Typography>
+                    <Typography variant="h6" sx={{ fontWeight: 700 }}>{getFormattedPrice(card.cost)}</Typography>
                 </Box>
 
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 1}}>
-                    <Typography color="info">{getDate(card.date)}</Typography>
+                    <Typography color="info">{getFormattedDate(card.date)}</Typography>
                     <Box sx={{ display: "flex", gap: 1, flexWrap: 'wrap', }}>
                         <Chip label={STATUS_META[card.status].title} color={getStatusColor(card.status)} />
                         <Chip label={PRIORITY_META[card.priority].title} variant="outlined" color={getPriorityColor(card.priority)} />

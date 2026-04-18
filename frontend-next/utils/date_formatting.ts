@@ -57,7 +57,57 @@ function getDateString({ years, months, days }) {
 
 }
 
-export function getFormattedDateString(date: string) {
+export function getFormattedDurationString(date: string) {
     let duration_formatted = getRegistrationDuration(date)
     return getDateString(duration_formatted)
+}
+
+export function getFormattedDate(dateString: string) {
+    /*const formatted = new Date(date).toLocaleString('ru-RU', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    });*/
+
+    const date = new Date(dateString);
+
+    const dayMonth = date.toLocaleDateString("ru-RU", {
+        day: 'numeric',
+        month: 'long',
+   //     year: '2-digit',
+    });
+
+    const time = date.toLocaleTimeString("ru-RU", {
+        hour: "2-digit",
+        minute: "2-digit",
+    });
+
+    return `${dayMonth} в ${time}, `;
+}
+
+export function getFormattedPrice(price: number) {
+    const formatted = price.toLocaleString('ru-RU', {
+        style: 'currency',
+        currency: 'RUB',
+        maximumFractionDigits: 0,
+    });
+    return formatted;
+}
+
+export function getFormattedDateShort(dateString: string) {
+    const date = new Date(dateString);
+
+    const time = date.toLocaleTimeString("ru-RU", {
+        hour: "2-digit",
+        minute: "2-digit",
+    });
+
+    const dayMonth = date.toLocaleDateString("ru-RU", {
+        day: "2-digit",
+        month: "2-digit",
+    });
+
+    return `${dayMonth} в ${time}`;
 }
