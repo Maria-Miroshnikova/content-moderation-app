@@ -1,16 +1,18 @@
 "use client";
 
-import { Button } from "@mui/material"
+import { Button, ButtonProps } from "@mui/material"
 import Link from "next/link"
 
-interface LinkButtonProps {
+interface LinkButtonPropsAdditional {
     path: string,
     label: string
 }
 
-const LinkButton = ({path, label} : LinkButtonProps) => {
+type LinkButtonProps = ButtonProps & LinkButtonPropsAdditional
+
+const LinkButton = ({path, label, ...props} : LinkButtonProps) => {
     return (
-        <Button component={Link} href={path} sx={{ my: 2, color: 'inherit'}}>
+        <Button component={Link} href={path} {...props}>
             {label}
         </Button>
     )

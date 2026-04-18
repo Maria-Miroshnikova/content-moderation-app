@@ -15,6 +15,12 @@ import { revalidatePath } from 'next/cache';
 import RejectPanel from '../../components/RejectPanel';
 import { redirect } from 'next/navigation';
 import { getCurrentCardUrl, makeUrlCurrentPageParams, makeUrlFromParamsCombo, makeUrlSearchParamsForServer, makeURLSearchParamsFromPageSearchParams, makeUrlSearchParamsNoDefault, reconstructSearchParamsFromUrl } from '../../utils/makeUrlParamsFromLocalInterfaces';
+import { Box, Button, Container, IconButton, Paper } from '@mui/material';
+import LinkButton from '../../components/ui/LinkButton';
+import LinkIconButton from '../../components/ui/LinkIconButton';
+
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 
 
 async function approvePost(data: FormData) {
@@ -172,43 +178,63 @@ async function CurrentAdPage({ params, searchParams }: PageProps) {
     }
 
     return (
-        <div className={cl.AdsDetailsPage_layout}>
-            <ModalView isVisible={search.modalView ?? false}>
-                <RejectPanel params={search} actionType={STATUS_BY_SERVER_TITLE[search.action]} id={id} isVisible={search.modalView ?? false} rejectPost={rejectPost} draftPost={draftPost} />
-            </ModalView>
 
-            <div className={cl.gallery_and_history_layout}>
-                <GalleryPanel images={adDetails.images} />
-                <ModerationHistoryPanel history={adDetails.moderationHistory} />
-            </div>
-            <div className={cl.description}>
-                <DescriptionPanel data={adDetails} />
-            </div>
-            <div className={cl.buttons_panel}>
-                <form>
-                    <input type="hidden" name="cardId" value={id} />
-                    <input type="hidden" name="url" value={getCurrentCardUrl(search, id)} />
-                    <button formAction={approvePost}>
-                        Одобрить
-                    </button>
-                </form>
-                <Link href={getRejectionPanelUrl(EStatus.DECLINED)}>
-                    <button>Отклонить</button>
-                </Link>
-                <Link href={getRejectionPanelUrl(EStatus.DRAFT)}>
-                    <button>Доработка</button>
-                </Link>
-            </div>
-            <div className={cl.navigation_panel}>
-                <Link href={getAllAdsUrl()}>К списку</Link>
-                <div>
-                    {(Number(search.listId) > 1) &&
-                        <Link href={getSideAdUrl(true)}>Пред</Link>}
-                    {(Number(search.listId) < Number(search.totalItems)) &&
-                        <Link href={getSideAdUrl(false)}>След</Link>}
+        <Box sx={{ display: 'flex', paddingLeft: 2, paddingRight: 2, position: "relative" }} >
+
+            <LinkIconButton url={getSideAdUrl(true)} sx={{
+                backgroundColor: "white",
+                boxShadow: 2,
+                "&:hover": {
+                    backgroundColor: "grey.100",
+                },
+                visibility: (Number(search.listId) > 1) ? "visible" : "hidden",
+                alignSelf: 'center'
+            }}>
+                <ArrowBackIosNewIcon fontSize="small" />
+            </LinkIconButton>
+
+
+            <Paper sx={{ width: "60%", mx: "auto", display: 'flex', flexDirection: 'column', padding: 4, gap: 2 }}>
+                <ModalView isVisible={search.modalView ?? false}>
+                    <RejectPanel params={search} actionType={STATUS_BY_SERVER_TITLE[search.action]} id={id} isVisible={search.modalView ?? false} rejectPost={rejectPost} draftPost={draftPost} />
+                </ModalView>
+
+                <Box sx={{ display: "flex", gap: 2 }}>
+                    <GalleryPanel images={adDetails.images} />
+                    <ModerationHistoryPanel history={adDetails.moderationHistory} />
+                </Box>
+                <Paper variant='outlined' sx={{ padding: 4 }}>
+                    <DescriptionPanel data={adDetails} />
+                </Paper>
+                <Box sx={{ display: "flex", alignItems: 'center', gap: 8, justifyContent: 'center' }}>
+                    <form>
+                        <input type="hidden" name="cardId" value={id} />
+                        <input type="hidden" name="url" value={getCurrentCardUrl(search, id)} />
+                        <Button formAction={approvePost} variant='outlined'>
+                            Одобрить
+                        </Button>
+                    </form>
+                    <LinkButton path={getRejectionPanelUrl(EStatus.DECLINED)} label='Отклонить' variant='outlined' />
+                    <LinkButton path={getRejectionPanelUrl(EStatus.DRAFT)} label='Доработка' variant='outlined' />
+                </Box>
+                <div className={cl.navigation_panel}>
+                    <Link href={getAllAdsUrl()}>К списку</Link>
                 </div>
-            </div>
-        </div>
+            </Paper>
+
+            <LinkIconButton url={getSideAdUrl(false)}
+                sx={{
+                    backgroundColor: "white",
+                    boxShadow: 2,
+                    "&:hover": {
+                        backgroundColor: "grey.100",
+                    },
+                    visibility: (Number(search.listId) < Number(search.totalItems)) ? "visible" : "hidden",
+                    alignSelf: 'center'
+                }}>
+                <ArrowForwardIosIcon fontSize="small" />
+            </LinkIconButton>
+        </Box>
     );
 
 }
