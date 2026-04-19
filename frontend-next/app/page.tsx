@@ -9,6 +9,9 @@ import { mapAdToCard, mapISearchParamsToStates } from '../utils/mapServerRespons
 import { makeUrlSearchParamsForServer, makeUrlFromParamsCombo, reconstructSearchParamsFromUrl, makeUrlCurrentPageParams, makeUrlSearchParamsNoDefault } from '../utils/makeUrlParamsFromLocalInterfaces';
 import PaginationBar from '../components/ui/PaginationBar';
 import { ICurrentPageParamsFull } from './[id]/page';
+import Form from '../components/ui/Form';
+import { Box, Container, Grid, Paper } from '@mui/material';
+import FilterAndSortForm from '../components/FilterAndSortForm';
 
 
 async function AdsPage({ searchParams }: { searchParams: ISearchParams }) {
@@ -21,14 +24,16 @@ async function AdsPage({ searchParams }: { searchParams: ISearchParams }) {
     const states: IStates = mapISearchParamsToStates(params);
 
     return (
-        <div className={cl.card_list_layout}>
-            <div className={cl.panel}>
-                <CardsFilterForm filter={states.filter} />
-                <CardsSortForm sortSettings={states.sort} />
-            </div>
+        <Container sx={{
+            width: "80%",
+            mx: "auto"
+        }}>
+            <Paper variant='outlined' sx={{ mb: 4, padding: 4 }}>
+                <CardsFilterForm filter={states.filter} sortSettings={states.sort} />
+            </Paper>
             <CardList cards={adsResponse.cards} page={states.page} limit={states.limit} totalItems={adsResponse.pagination.totalItems} params={params} />
             <PaginationBar totalPages={adsResponse.pagination.totalPages} totalItems={adsResponse.pagination.totalItems} page={states.page} />
-        </div>
+        </Container>
     );
 }
 
@@ -36,6 +41,7 @@ export default AdsPage;
 
 async function getAds(params: ISearchParams) {
     const url = `http://localhost:3001/api/v1/ads`
+    //console.log("params from reconstruct", params)
     const url_params: URLSearchParams = makeUrlSearchParamsForServer(params)
     const url_with_params: string = makeUrlFromParamsCombo(url_params.toString(), url)
 

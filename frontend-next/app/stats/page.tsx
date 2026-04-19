@@ -2,10 +2,13 @@
 import Link from 'next/link';
 import cl from '../../styles/StatisticsPage.module.css';
 import { EPeriod, PERIOD_META, PERMISSIONS_META } from '../../types/enums';
-import { getDefaultStatisticsPageParams, IActivityItemStats, IActivityResponse, ICategoriesStats, IDecisionStats, IModeratorInfoResponse, IStatisticsPageParams, IStatisticsResponse } from '../../types/server_types';
+import { getDefaultStatisticsPageParams, IActivityItemStats, ICategoriesStats, IDecisionStats, IModeratorInfoResponse, IStatisticsPageParams, IStatisticsResponse } from '../../types/server_types';
 import { makeStatisticsPageParamsDefault, makeURLSearchParamsFromPageSearchParams } from '../../utils/makeUrlParamsFromLocalInterfaces';
-import BarChart from '../../components/ui/BarChart';
 import PieChart from '../../components/ui/PieChart';
+import { Box, Chip, Container, Grid, Paper, Tab, Tabs, Typography } from '@mui/material';
+import LinkTab from '../../components/ui/LinkTab';
+
+import ChartCard from '../../components/ui/ChardCard';
 
 interface StatisticsPageProps {
     searchParams: IStatisticsPageParams
@@ -54,116 +57,107 @@ async function StatisticsPage({ searchParams }: StatisticsPageProps) {
     };
 
     return (
-        <div className={cl.stats_page_layout}>
+        <Container sx={{ background: "white", display: 'flex', flexDirection: 'column', gap: 2, paddingTop: 4, paddingBottom: 6 }}>
+            <Paper sx={{ padding: 4, display: "flex", flexDirection: "column", gap: 2 }} variant='outlined'>
+                <Typography variant='h5'>Данные модератора</Typography>
+                <Box sx={{ display: "flex", gap: 2 }}>
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                        <Typography variant='body1' color="info">Имя</Typography>
+                        <Typography variant='body1' color="info">Почта</Typography>
+                        <Typography variant='body1' color="info">Должность</Typography>
+                        <Typography variant='body1' color="info">Доступные действия</Typography>
+                    </Box>
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                        <Typography variant='body1'>{moderInfo.name}</Typography>
+                        <Typography variant='body1'>{moderInfo.email}</Typography>
+                        <Typography variant='body1'>{moderInfo.role}</Typography>
+                        <Box sx={{ display: "flex", gap: 1 }}>
+                            {(moderInfo.permissions.map((p, id) =>
+                                <Chip key={id} label={PERMISSIONS_META[p]} variant='outlined' color="info" sx={{ background: "white" }} />
+                            ))}
+                        </Box>
+                    </Box>
+                </Box>
+            </Paper>
 
-            <div className={cl.moder_panel}>
-                <p><b>Данные модератора</b></p>
-                <div style={{ display: "flex", gap: "20px" }}>
-                    <div style={{ display: "flex", flexDirection: "column" }}>
-                        <p>Имя:</p>
-                        <p>Почта:</p>
-                        <p>Должность:</p>
-                        <p>Доступные действия:</p>
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column" }}>
-                        <p>{moderInfo.name}</p>
-                        <p>{moderInfo.email}</p>
-                        <p>{moderInfo.role}</p>
-                        <p>{(moderInfo.permissions.map(p => PERMISSIONS_META[p])).join(", ")}</p>
-                    </div>
-                </div>
-            </div>
+            <Container sx={{ mb: 2 }}>
+                <Tabs value={params.period}>
+                    <LinkTab label={PERIOD_META[EPeriod.TODAY].title} path={`/stats?${getUrlForPeriodButtons(EPeriod.TODAY)}`} />
+                    <LinkTab label={PERIOD_META[EPeriod.WEEK].title} path={`/stats?${getUrlForPeriodButtons(EPeriod.WEEK)}`} />
+                    <LinkTab label={PERIOD_META[EPeriod.MONTH].title} path={`/stats?${getUrlForPeriodButtons(EPeriod.MONTH)}`} />
+                </Tabs>
+            </Container>
 
-            <div className={cl.period_panel}>
-                <p>Период: </p>
-                <div className={cl.period_btns_container}>
-                    <Link href={`/stats?${getUrlForPeriodButtons(EPeriod.TODAY)}`} className={
-                        params.period === EPeriod.TODAY
-                            ? [cl.btn_current, cl.btn].join(' ')
-                            : cl.btn
-                    }>
-                        {PERIOD_META[EPeriod.TODAY].title}
-                    </Link>
-                    <Link href={`/stats?${getUrlForPeriodButtons(EPeriod.WEEK)}`} className={
-                        params.period === EPeriod.WEEK
-                            ? [cl.btn_current, cl.btn].join(' ')
-                            : cl.btn
-                    }
-                    >{PERIOD_META[EPeriod.WEEK].title}
-                    </Link>
-                    <Link href={`/stats?${getUrlForPeriodButtons(EPeriod.MONTH)}`} className={
-                        params.period === EPeriod.MONTH
-                            ? [cl.btn_current, cl.btn].join(' ')
-                            : cl.btn
-                    }
-                    >{PERIOD_META[EPeriod.MONTH].title}
-                    </Link>
+            <Grid container spacing={{ xs: 2, md: 2 }} columns={{ xs: 6, sm: 12, md: 12 }}>
+                <Grid size={6} sx={{padding: 4}}>
+                    <Grid container spacing={{ xs: 4, md: 4 }} columns={{ xs: 6, sm: 12, md: 12 }}>
+                        <Grid size={6}>
+                            <Paper sx={{ padding: 4, height: "100%" }}>
+                                <Typography variant='body1' color='info' align='center'>Проверено</Typography>
+                                <Typography variant='body1' color='info' align='center'>{params.period === EPeriod.TODAY
+                                    ? statsInfo.totalReviewedToday
+                                    : (params.period === EPeriod.WEEK
+                                        ? statsInfo.totalReviewedThisWeek
+                                        : (params.period === EPeriod.MONTH
+                                            ? statsInfo.totalReviewedThisMonth
+                                            : statsInfo.totalReviewedThisMonth
+                                        ))}</Typography>
+                            </Paper>
+                        </Grid>
+                        <Grid size={6}>
+                            <Paper sx={{ padding: 4, height: "100%" }}>
+                                <Typography variant='body1' color='info' align='center'>Одобрено</Typography>
+                                <Typography variant='body1' color='info' align='center'>{Number(statsInfo.approvedPercentage.toFixed(1))} %</Typography>
+                            </Paper>
+                        </Grid>
+                        <Grid size={6}>
+                            <Paper sx={{ padding: 4, height: "100%" }}>
+                                <Typography variant='body1' color='info' align='center'>Отклонено</Typography>
+                                <Typography variant='body1' color='info' align='center'>{Number(statsInfo.rejectedPercentage.toFixed((1)))} %</Typography>
+                            </Paper>
+                        </Grid>
+                        <Grid size={6}>
+                            <Paper sx={{ padding: 4, height: "100%" }}>
+                                <Typography variant='body1' color='info' align='center'>Ср. время</Typography>
+                                <Typography variant='body1' color='info' align='center'>{getMinutes(statsInfo.averageReviewTime)}</Typography>
+                            </Paper>
+                        </Grid>
+                    </Grid>
+                </Grid>
 
-                </div>
-            </div>
+                <Grid size={6}>
+                    <ChartCard
+                        xAxisValues={activityInfo.map((g) => getFormatDateDM(g.date))}
+                        seriesValues={activityInfo.map((g) => (g.rejected + g.approved + g.requestChanges))}
+                        yLabel='обработано объявлений за день'
+                        title={`Активность ${PERIOD_META[params.period].title}`}
+                        color={'#90caf9'}
+                    />
+                </Grid>
+                <Grid size={6}>
+                    <ChartCard
+                        isPie={true}
+                        title={'Принятые решения'}
+                        pieData={
+                            [
+                                { id: 0, value: decisionInfo.approved, label: "одобрено" },
+                                { id: 1, value: decisionInfo.rejected, label: "отклонено" },
+                                { id: 2, value: decisionInfo.requestChanges, label: "возвращено" }
+                            ]
+                        }
+                    />
+                </Grid>
+                <Grid size={6}>
+                    <ChartCard
+                        xAxisValues={Object.entries(categoriesInfo).map((i) => i[0])}
+                        seriesValues={Object.entries(categoriesInfo).map((i) => i[1])}
+                        yLabel='обработано объявлений в категории'
+                        title={'Активность по категориям'}
+                    />
+                </Grid>
+            </Grid>
 
-            <div className={cl.stats_layout}>
-                <div className={cl.stats_container}>
-                    <div className={cl.stats_panel}>
-                        <p>Проверено</p>
-                        <p>{params.period === EPeriod.TODAY
-                            ? statsInfo.totalReviewedToday
-                            : (params.period === EPeriod.WEEK
-                                ? statsInfo.totalReviewedThisWeek
-                                : (params.period === EPeriod.MONTH
-                                    ? statsInfo.totalReviewedThisMonth
-                                    : statsInfo.totalReviewedThisMonth
-                                ))}</p>
-                    </div>
-                    <div className={cl.stats_panel}>
-                        <p>Одобрено</p>
-                        <p>{Number(statsInfo.approvedPercentage.toFixed(1))} %</p>
-                    </div>
-                </div>
-                <div className={cl.stats_container}>
-                    <div className={cl.stats_panel}>
-                        <p>Отклонено</p>
-                        <p>{Number(statsInfo.rejectedPercentage.toFixed((1)))} %</p>
-                    </div>
-                    <div className={cl.stats_panel}>
-                        <p>Ср. время</p>
-                        <p>{getMinutes(statsInfo.averageReviewTime)}</p>
-                    </div>
-                </div>
-            </div>
-
-            <div className={cl.graphic_container}>
-                <BarChart
-                    labels={activityInfo.map((g) => getFormatDateDM(g.date))}
-                    values={activityInfo.map((g) => (g.rejected + g.approved + g.requestChanges))}
-                    period={params.period}
-                    label={"Количество обработанных объявлений"}
-                />
-            </div>
-
-            <div className={cl.graphic_container}>
-                <PieChart
-                    approved={decisionInfo.approved}
-                    rejected={decisionInfo.rejected}
-                    requestChanges={decisionInfo.requestChanges}
-                />
-                <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
-                    <p>Одобрено: {Number(decisionInfo.approved.toFixed(1))}%</p>
-                    <p>Отклонено: {Number(decisionInfo.rejected.toFixed(1))}%</p>
-                    <p>Возвращено: {Number(decisionInfo.requestChanges.toFixed(1))}%</p>
-                </div>
-            </div>
-
-            <div className={cl.graphic_container}>
-                <BarChart
-                    labels={Object.entries(categoriesInfo).map((i) => i[0])}
-                    values={Object.entries(categoriesInfo).map((i) => i[1])}
-                    period={params.period}
-                    label={"Количество обработанных объявлений в категории"}
-                />
-            </div>
-
-        </div >
+        </Container >
     );
 }
 

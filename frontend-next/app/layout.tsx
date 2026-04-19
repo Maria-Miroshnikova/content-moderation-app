@@ -2,6 +2,8 @@ import { Metadata } from 'next';
 import NavBar from '../components/ui/NavBar';
 import { FilterAndSortProvider } from '../context/index';
 import '../styles/global.css';
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
+import { Box } from '@mui/material';
 
 /*export default function App({ Component, pageProps }) {
     return (
@@ -16,14 +18,18 @@ export const metadata: Metadata = {
     description: "moder app for applications on wepsite with ads"
 }
 
-export default function RootLayout({children}: { children: React.ReactNode }) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
     return (
         <html lang="ru">
             <body>
-                <FilterAndSortProvider>
-                    <NavBar />
-                    {children}
-                </FilterAndSortProvider>
+                <AppRouterCacheProvider>
+                    <FilterAndSortProvider>
+                        <NavBar />
+                        <Box sx={{ background: "#f5f5f5"}}>
+                            {children}
+                        </Box>
+                    </FilterAndSortProvider>
+                </AppRouterCacheProvider>
             </body>
         </html>
     )

@@ -6,23 +6,21 @@ import { EReason, EStatus, REASONS_META, STATUS_META } from "../types/enums"
 import { useRouter, useSearchParams } from "next/navigation"
 import { ICurrentPageParamsFull } from "../app/[id]/page"
 import { getCurrentCardUrl, reconstructSearchParamsFromUrl } from "../utils/makeUrlParamsFromLocalInterfaces"
+import { Box, Button, DialogActions, DialogContent, DialogTitle, FormControlLabel, Radio, RadioGroup, TextField, Typography } from "@mui/material"
 
 interface RejectPanelProps {
     params: ICurrentPageParamsFull,
     actionType: EStatus,
     id: string,
-    isVisible: boolean,
+    //  isVisible: boolean,
     rejectPost: (data: FormData) => Promise<void>,
     draftPost: (data: FormData) => Promise<void>
 }
 
-const RejectPanel = ({params, actionType, id, isVisible, rejectPost, draftPost }: RejectPanelProps) => {
+const RejectPanel = ({ params, actionType, id, rejectPost, draftPost }: RejectPanelProps) => {
 
     const [reason, setReason] = useState(EReason.OTHER)
     const [comment, setComment] = useState("")
-
-    if (!isVisible)
-        return null
 
     function handleCloseModalViewWhenPostAndGetRedirectUrl() {
         let newParams: ICurrentPageParamsFull = JSON.parse(JSON.stringify(params));
@@ -34,32 +32,34 @@ const RejectPanel = ({params, actionType, id, isVisible, rejectPost, draftPost }
         return url;
     }
 
+    if (!actionType) return null;
+
     return (
-        <form className={cl.container} action={(actionType == EStatus.DECLINED) ? rejectPost : draftPost}>
+        <form style={{padding: "16px"}} action={(actionType == EStatus.DECLINED) ? rejectPost : draftPost}>
             <input type="hidden" name="cardId" value={id} />
             <input type="hidden" name="url" value={handleCloseModalViewWhenPostAndGetRedirectUrl()} />
-            <p><b>{STATUS_META[actionType].movalView}</b></p>
-            <div className={cl.inner_panel}>
-                <p>Причина:</p>
-                {Object.entries(REASONS_META).filter(([key]) => Number(key) !== EReason.NOT_SELECTED).map(([key, value]) => (
-                    <label key={key}>
-                        <input
-                            type="radio"
-                            name="reason"
-                            value={key}
-                            checked={reason === Number(key)}
-                            onChange={() => setReason(Number(key))}
-                        />
-                        {value}
-                    </label>
-                ))}
-            </div>
-            <div className={cl.inner_panel}>
-                <p>Комментарий:</p>
-                <textarea name="comment" rows={4} value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Опишите подробно причину..."></textarea>
-            </div>
-            <button type="submit">Отправить</button>
-        </form>
+            <DialogTitle variant="h5">{STATUS_META[actionType].movalView}</DialogTitle>
+            <DialogContent sx={{ display: "flex", flexDirection: "column" }}>
+                <Typography variant="h6" color="textSecondary">Причина:</Typography>
+                <RadioGroup
+                    name="reason"
+                    value={reason}
+                    onChange={(e) => setReason(Number(e.target.value))}
+                >
+                    {Object.entries(REASONS_META).filter(([key]) => Number(key) !== EReason.NOT_SELECTED).map(([key, value]) => (
+                        <FormControlLabel key={key} value={key} label={value} control={<Radio />}/>
+                    ))}
+                </RadioGroup>
+                <Box sx={{ mt: 2 }}>
+                    <Typography variant="h6" color="textSecondary">Комментарий</Typography>
+                    <TextField name="comment" value={comment} multiline
+                        rows={4} onChange={(e) => setComment(e.target.value)} fullWidth placeholder="Опишите подробно причину..."></TextField>
+                </Box>
+            </DialogContent>
+            <DialogActions>
+                <Button type="submit">Отправить</Button>
+            </DialogActions>
+        </form >
     )
 }
 

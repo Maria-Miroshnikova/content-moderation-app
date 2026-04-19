@@ -49,7 +49,7 @@ export const SORT_DEFAULT: ISort = {
     sort_up: false
 }
 
-export const LIMIT_DEFAULT: number = 10;
+export const LIMIT_DEFAULT: number = 12;
 export const PAGE_DEFAULT: number = 1;
 
 
