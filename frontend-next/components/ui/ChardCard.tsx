@@ -20,7 +20,7 @@ interface ChartCardProps {
 
 const ChartCard = ({ xAxisValues, seriesValues, yLabel, title, color, isPie, pieData, pieLables }: ChartCardProps) => {
     return (
-        <Paper>
+        <Paper sx={{height: "100%"}}>
             <Typography variant='h6' align='center' sx={{ paddingTop: 2 }}>{title}</Typography>
             {isPie ?
                 <PieChart
@@ -37,10 +37,8 @@ const ChartCard = ({ xAxisValues, seriesValues, yLabel, title, color, isPie, pie
                 <BarChart
                     series={[{ data: seriesValues, label: yLabel, color: color }]}
                     xAxis={[{ data: xAxisValues }]}
-                    height={200}
-                    width={600}
                     borderRadius={10}
-                    sx={{ mr: 3}}
+                    sx={{ mr: 3, height: "80%"}}
                 />
             }
         </Paper>
