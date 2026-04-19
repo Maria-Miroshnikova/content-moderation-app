@@ -15,12 +15,13 @@ import { revalidatePath } from 'next/cache';
 import RejectPanel from '../../components/RejectPanel';
 import { redirect } from 'next/navigation';
 import { getCurrentCardUrl, makeUrlCurrentPageParams, makeUrlFromParamsCombo, makeUrlSearchParamsForServer, makeURLSearchParamsFromPageSearchParams, makeUrlSearchParamsNoDefault, reconstructSearchParamsFromUrl } from '../../utils/makeUrlParamsFromLocalInterfaces';
-import { Box, Button, Container, IconButton, Paper } from '@mui/material';
+import { Box, Button, Container, Dialog, IconButton, Paper } from '@mui/material';
 import LinkButton from '../../components/ui/LinkButton';
 import LinkIconButton from '../../components/ui/LinkIconButton';
 
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import ModalDialog from '../../components/ui/ModalDialog';
 
 
 async function approvePost(data: FormData) {
@@ -177,6 +178,13 @@ async function CurrentAdPage({ params, searchParams }: PageProps) {
         return url_with_params;
     }
 
+
+    /*
+    <ModalView isVisible={search.modalView ?? false}>
+                        <RejectPanel params={search} actionType={STATUS_BY_SERVER_TITLE[search.action]} id={id} isVisible={search.modalView ?? false} rejectPost={rejectPost} draftPost={draftPost} />
+                    </ModalView>
+    */
+
     return (
 
         <Box sx={{ display: 'flex', paddingLeft: 2, paddingRight: 2, position: "relative" }} >
@@ -195,9 +203,9 @@ async function CurrentAdPage({ params, searchParams }: PageProps) {
 
 
             <Paper sx={{ width: "60%", mx: "auto", display: 'flex', flexDirection: 'column', padding: 4, gap: 2 }}>
-                <ModalView isVisible={search.modalView ?? false}>
-                    <RejectPanel params={search} actionType={STATUS_BY_SERVER_TITLE[search.action]} id={id} isVisible={search.modalView ?? false} rejectPost={rejectPost} draftPost={draftPost} />
-                </ModalView>
+                <ModalDialog isVisible={search.modalView ?? false}>
+                    <RejectPanel params={search} actionType={STATUS_BY_SERVER_TITLE[search.action]} id={id} rejectPost={rejectPost} draftPost={draftPost} />
+                </ModalDialog>
 
                 <LinkButton path={getAllAdsUrl()} label='К списку' sx={{ alignSelf: "flex-start" }} size='small' />
                 <Box sx={{ display: "flex", gap: 2, height: 300 }}>
@@ -209,7 +217,7 @@ async function CurrentAdPage({ params, searchParams }: PageProps) {
                             padding: 2,
                             background: "#f5f5f5"
                         }}
-                        
+
                     >
                         <ModerationHistoryPanel history={adDetails.moderationHistory} />
                     </Paper>
